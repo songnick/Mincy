@@ -8,8 +8,6 @@
         android:id="@+id/media"
         android:name="com.songnick.mincy.fragment.MediaFragment"
         tools:layout="@layout/fragment_media_grid">
-        <action
 
-            />
     </fragment>
 </navigation>
