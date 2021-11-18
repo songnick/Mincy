@@ -1,12 +1,16 @@
 package com.songnick.mincy.viewmodel
 
+import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.songnick.mincy.data.MediaData
 import com.songnick.mincy.data.MediaRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,7 +22,11 @@ class MediaListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            media.value = repository.getAllMediaList()
+            Log.i("TAG", "current thread: ${Thread.currentThread()} main: ${Looper.getMainLooper().thread}")
+            val mediaList = withContext(Dispatchers.IO){
+                repository.getAllMediaList()
+            }
+            media.value = mediaList
         }
     }
 }

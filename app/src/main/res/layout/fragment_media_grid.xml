@@ -9,9 +9,14 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/media_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingStart="10dp"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            app:spanCount="4"
+            android:clipToPadding="false"
+            tools:context = ".MainActivity"
             tools:listitem="@layout/fragment_media_grid"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
