@@ -13,6 +13,7 @@ fun bindImageUrl(view: ImageView, imageUrl: String?) {
         val file = File(imageUrl)
         Glide.with(view.context)
             .load(file)
+            .transition(DrawableTransitionOptions.withCrossFade())
             .into(view)
     }
 }

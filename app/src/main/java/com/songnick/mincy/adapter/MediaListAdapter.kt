@@ -19,6 +19,9 @@ class MediaListAdapter: ListAdapter<MediaData, MediaListAdapter.ViewHolder>(Diff
         private val binding: MediaGridItemBinding
     ):RecyclerView.ViewHolder(binding.root){
         fun binding(data:MediaData){
+            val layoutParams = binding.root.layoutParams
+            layoutParams.height = 160
+            binding.root.layoutParams = layoutParams
             with(binding){
                 viewModel = MediaItemViewModel(data)
                 executePendingBindings()

@@ -8,7 +8,10 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil.setContentView
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.songnick.mincy.databinding.ActivityMainBinding
+import com.songnick.mincy.fragment.MainFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,15 +28,23 @@ class MainActivity : AppCompatActivity() {
         requestReaderPermission()
     }
 
-
-    override fun onResume() {
-        super.onResume()
+    private fun navigateToGallery() {
+        val directions = MainFragmentDirections.actionMainToGridFragment()
+        findNavController(R.id.nav_host).navigate(directions)
     }
 
     private fun requestReaderPermission(){
         val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
         if (needRequest){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+        if(!needRequest){
+            navigateToGallery()
         }
     }
 
@@ -46,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         when(requestCode){
             REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Log.i(TAG, " reqeust permission success!")
+                    navigateToGallery()
                 }
             }
 
