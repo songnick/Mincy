@@ -3,6 +3,8 @@ package com.songnick.mincy.data
 import android.app.Application
 import android.provider.MediaStore
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,13 +20,13 @@ class MediaRepository @Inject constructor(context:Application) {
 
     }
 
-    suspend fun getAllMediaList():List<MediaData>{
+    suspend fun getAllMediaList():List<MediaData> = withContext(Dispatchers.IO){
         Log.i("TAG", "getAllMediaList current thread: ${Thread.currentThread()}")
         val selection = "(".plus(MediaStore.Files.FileColumns.MEDIA_TYPE)
             .plus("=?").plus(" OR ").plus(MediaStore.Files.FileColumns.MEDIA_TYPE)
             .plus("=?)").plus(" AND ").plus(MediaStore.MediaColumns.SIZE).plus(">0")
         val args = arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
-        return getMediaList(selection, args)
+        getMediaList(selection, args)
     }
 
 

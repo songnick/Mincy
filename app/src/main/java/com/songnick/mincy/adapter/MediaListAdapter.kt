@@ -20,7 +20,7 @@ class MediaListAdapter: ListAdapter<MediaData, MediaListAdapter.ViewHolder>(Diff
     ):RecyclerView.ViewHolder(binding.root){
         fun binding(data:MediaData){
             val layoutParams = binding.root.layoutParams
-            layoutParams.height = 160
+            layoutParams.height = 180
             binding.root.layoutParams = layoutParams
             with(binding){
                 viewModel = MediaItemViewModel(data)
