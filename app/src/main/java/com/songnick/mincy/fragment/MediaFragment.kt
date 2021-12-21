@@ -25,6 +25,7 @@ class MediaFragment:Fragment() {
     ): View? {
         binding = FragmentMediaGridBinding.inflate(inflater, container, false)
         binding.mediaList.adapter =  adapter
+        binding.mediaList.addItemDecoration(ItemDecoration())
         return binding.root
     }
 
