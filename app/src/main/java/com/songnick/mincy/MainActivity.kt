@@ -4,15 +4,20 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
-import com.songnick.mincy.databinding.ActivityMainBinding
+import com.songnick.mincy.compose.ui.MincyApp
 import com.songnick.mincy.fragment.MainFragmentDirections
+import com.songnick.mincy.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -22,30 +27,38 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
     }
 
+    private val mediaViewModel:MediaViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         requestReaderPermission()
-    }
+        setContent { App() }
 
-    private fun navigateToGallery() {
-        val directions = MainFragmentDirections.actionMainToGridFragment()
-        findNavController(R.id.nav_host).navigate(directions)
     }
 
     private fun requestReaderPermission(){
         val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
         if (needRequest){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION)
+        }else{
+            mediaViewModel.permissionRequested = true
+            mediaViewModel.handleAction(MediaViewModel.Action.LoadData)
         }
     }
 
     override fun onResume() {
         super.onResume()
         val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        if(!needRequest){
-            navigateToGallery()
+        if (!needRequest){
+
         }
+    }
+
+    @Composable
+    fun App(){
+        MincyApp(mediaViewModel, requestPermission = {
+            requestReaderPermission()
+        })
     }
 
     override fun onRequestPermissionsResult(
@@ -53,14 +66,14 @@ class MainActivity : AppCompatActivity() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-
-        when(requestCode){
+        when (requestCode) {
             REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    navigateToGallery()
+                mediaViewModel.permissionRequested =
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+                if (mediaViewModel.permissionRequested){
+                    mediaViewModel.handleAction(MediaViewModel.Action.LoadData)
                 }
             }
-
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
 
