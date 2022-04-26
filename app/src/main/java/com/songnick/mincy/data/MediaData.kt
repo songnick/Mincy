@@ -5,4 +5,11 @@ data class MediaData(val path:String,val name: String,
                     ) {
     var duration:Long = 0
     var thumbnail:String = ""
+
+    fun getImagePath():String{
+        if (mediaType.contains("video")){
+            return thumbnail
+        }
+        return path
+    }
 }

@@ -46,7 +46,7 @@ fun MincyApp(mediaViewModel: MediaViewModel, requestPermission: ()->Unit) {
                     }
                 }
                 is MediaViewModel.UIState.ShowData ->{
-                    MediaGrid(pictureList = state.mediaList, 3)
+                    MediaGrid(pictureList = state.mediaList, 4)
                 }
             }
         }

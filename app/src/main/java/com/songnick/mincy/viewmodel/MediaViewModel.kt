@@ -15,7 +15,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class MediaViewModel @Inject constructor(
@@ -26,18 +28,25 @@ class MediaViewModel @Inject constructor(
         const val TAG = "MediaListViewModel"
     }
     var permissionRequested by mutableStateOf(false)
-    init {
-        if (permissionRequested){
-            loadMediaList()
-        }
-    }
+    var pictureList = MutableLiveData<List<MediaData>>()
+    var videoList = MutableLiveData<List<MediaData>>()
+
     private fun loadMediaList(){
         viewModelScope.launch(Dispatchers.Main) {
-            delay(1000L*3)
             Log.i(TAG, "current thread: ${Thread.currentThread()} main: ${Looper.getMainLooper().thread}")
             val pictureList =  repository.getPictureList()
-            Log.i(TAG, "after current thread: ${Thread.currentThread()} main: ${Looper.getMainLooper().thread}")
-            _uiState.value = UIState.ShowData(pictureList)
+            val videoList = repository.getVideoList()
+            val mediaList = ArrayList<MediaData>()
+            if (pictureList.isNotEmpty() && videoList.isNotEmpty()){
+                mediaList.addAll(pictureList)
+                mediaList.addAll(videoList)
+                mediaList.sortByDescending {
+                    it.date
+                }
+            }
+            async {  }
+            Log.i(TAG, "after current thread: ${Thread.currentThread()} main: ${videoList.size}")
+            _uiState.value = UIState.ShowData(mediaList)
         }
     }
 

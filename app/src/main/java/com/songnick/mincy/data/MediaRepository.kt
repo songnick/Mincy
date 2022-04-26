@@ -4,11 +4,15 @@ import android.app.Application
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class MediaRepository @Inject constructor(context:Application) {
@@ -19,30 +23,20 @@ class MediaRepository @Inject constructor(context:Application) {
    private var context:Application = context
 
     suspend fun getPictureList():List<MediaData> = withContext(Dispatchers.IO){
-        val selection = (MediaStore.Files.FileColumns.MEDIA_TYPE)
-            .plus("=?").plus(" AND ").plus(MediaStore.MediaColumns.SIZE).plus(">0")
-        val args = arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString())
+        Log.i(TAG, " current thread picture: ${Thread.currentThread().name}")
+        val selection = (MediaStore.MediaColumns.SIZE).plus(">0")
+        val args = null
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        getMediaList(selection, args)
-    }
-
-    suspend fun getVideoList(){
-        val selection = (MediaStore.Files.FileColumns.MEDIA_TYPE)
-            .plus("=?").plus(" AND ").plus(MediaStore.MediaColumns.SIZE).plus(">0")
-        val args = arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
-        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
         getMediaList(selection, args, uri)
     }
 
-    suspend fun getAllMediaList():List<MediaData> = withContext(Dispatchers.IO){
-        Log.i("TAG", "getAllMediaList current thread: ${Thread.currentThread()}")
-        val selection = "(".plus(MediaStore.Files.FileColumns.MEDIA_TYPE)
-            .plus("=?").plus(" OR ").plus(MediaStore.Files.FileColumns.MEDIA_TYPE)
-            .plus("=?)").plus(" AND ").plus(MediaStore.MediaColumns.SIZE).plus(">0")
-        val args = arrayOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE.toString(), MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO.toString())
-        getMediaList(selection, args)
+    suspend fun getVideoList():List<MediaData> = withContext(Dispatchers.IO){
+        Log.i(TAG, " current thread video: ${Thread.currentThread().name}")
+        val selection = (MediaStore.MediaColumns.SIZE).plus(">0")
+        val args = null
+        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        getMediaList(selection, args, uri)
     }
-
 
     private fun getMediaList(selection:String, selectionArgs:Array<String>):List<MediaData>{
         val projections =
@@ -82,7 +76,7 @@ class MediaRepository @Inject constructor(context:Application) {
                 val mediaData = MediaData(path, name, date, type)
                 mediaData.thumbnail = thumbnail
                 mediaData.duration = duration
-                Log.i(TAG, " path: $mediaData")
+                Log.i(TAG, " path: $mediaData thumbnail $thumbnail")
                 array.add(mediaData)
             }while (cursor.moveToNext())
             cursor.close()
@@ -91,7 +85,7 @@ class MediaRepository @Inject constructor(context:Application) {
     }
 
 
-    private fun getMediaList(selection:String, selectionArgs:Array<String>,contentUri:Uri):List<MediaData>{
+    private fun getMediaList(selection:String, selectionArgs:Array<String>?,contentUri:Uri):List<MediaData>{
         val projections =
             arrayOf(MediaStore.Files.FileColumns._ID, MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME
             , MediaStore.MediaColumns.DATE_MODIFIED, MediaStore.MediaColumns.MIME_TYPE, MediaStore.MediaColumns.WIDTH,
@@ -99,7 +93,6 @@ class MediaRepository @Inject constructor(context:Application) {
                 MediaStore.Video.Thumbnails.DATA)
         val array = ArrayList<MediaData>()
         val order = MediaStore.Files.FileColumns.DATE_MODIFIED.plus(" DESC")
-        val contentUri = MediaStore.Files.getContentUri("external")
         val cursor = context.contentResolver.query(contentUri, projections, selection, selectionArgs, order)
         cursor?.let {
             it.moveToFirst()
@@ -127,7 +120,6 @@ class MediaRepository @Inject constructor(context:Application) {
                 val mediaData = MediaData(path, name, date, type)
                 mediaData.thumbnail = thumbnail
                 mediaData.duration = duration
-                Log.i(TAG, " path: $mediaData")
                 array.add(mediaData)
             }while (cursor.moveToNext())
             cursor.close()
