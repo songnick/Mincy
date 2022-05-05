@@ -1,6 +1,8 @@
 package com.songnick.mincy.compose.custom
 
+import android.graphics.Rect
 import android.util.Log
+import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
@@ -15,7 +17,10 @@ import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -26,10 +31,10 @@ object Tag{
 }
 
 @Composable
-fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp){
+fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 1.0f){
     BoxWithConstraints(contentAlignment = Alignment.BottomEnd) {
-        var offset by remember {
-            mutableStateOf(0f)
+        var cropRect by remember {
+            mutableStateOf(Rect())
         }
         var leftDrag by remember {
           mutableStateOf(false)
@@ -43,32 +48,38 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp){
         }
         val canvasWidth = maxWidth-20.dp
         val canvasHeight = maxHeight - 20.dp
+        var deltaWidth by remember {
+            mutableStateOf(0.dp)
+        }
+        var deltaHeight by remember {
+            mutableStateOf(0.dp)
+        }
         Log.i("TAG", " canvas width: $canvasWidth + height: $canvasHeight")
         Surface(modifier = Modifier
-            .width(canvasWidth)
-            .height(canvasHeight)
-            .padding(5.dp)
-            .scrollable(
-                orientation = Orientation.Vertical,
-                enabled = true,
-                state = rememberScrollableState { delta ->
-                    offset += delta
-                    Log.i(Tag.TAG, " current deltate: $delta")
-                    delta
-                })
+            .fillMaxWidth()
+            .fillMaxHeight()
             .pointerInput(Unit) {
-                detectTapGestures {
-                    Log.i(Tag.TAG, " detectTapGestures x: ${it.x} y: ${it.y}")
-                }
-                detectDragGestures { change, dragAmount ->
-                    change.position.x
+                detectDragGestures(onDragStart = {
+
+                }) { change, dragAmount ->
+                    Log.i(Tag.TAG, " detectDragGestures x: ${change.position.x} y: ${dragAmount.x}")
+
                 }
             },
             color = Color.Blue
         ) {
+            var width by remember {
+                mutableStateOf(maxWidth + deltaWidth)
+            }
+            val height = maxWidth/aspectRatio
+            Log.i(Tag.TAG, " current size width: $width + height: $height")
             Canvas(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()){
+                .width(100.dp)
+                .height(200.dp)
+                .padding(cornerWidth / 2)
+            ){
+
+                Log.i(Tag.TAG, " current canvas size : $size")
                 //vertical grid
                 drawLine(
                     color= Color.Yellow,
@@ -144,48 +155,27 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp){
             }
         }
     }
-
 }
 
-@Composable
-fun Line(color: Color = Color.Yellow, width: Dp, height: Dp){
-    val widthSplit = width/3
-    val heightSplit = height/3
-    val  modifier = Modifier
-        .width(1.dp)
-        .offset(x = widthSplit)
-        .fillMaxHeight()
-    Surface(color = color, modifier = modifier) {
+@Stable
+fun Modifier.test(){
 
-    }
-
-}
-
-@Composable
-fun RectLine(width:Dp, height:Dp, modifier: Modifier){
-    RectLine(
-        modifier = modifier
-            .height(height)
-            .width(width)
-    )
-    RectLine(
-        modifier = modifier
-            .height(width)
-            .width(height)
-    )
-}
-
-@Composable
-fun RectLine(modifier: Modifier, color: Color = Color.Yellow){
-    Surface(color=color, modifier = modifier){
-
-    }
 }
 
 @Preview
 @Composable
 fun PreViewD(){
     MaterialTheme {
-        CropWindow()
+        Surface(Modifier.fillMaxHeight().fillMaxWidth(), color=Color.Yellow) {
+            Canvas(modifier = Modifier.width(100.dp).height(100.dp)){
+                drawLine(
+                    color= Color.Yellow,
+                    start = Offset(10f/2, size.height/3f),
+                    end = Offset(size.width-10f/2 , size.height/3f),
+                    strokeWidth = 5f
+                )
+                drawRoundRect(Color.Red, Offset(0f, 0f), Size(size.width, size.height))
+            }
+        }
     }
 }
