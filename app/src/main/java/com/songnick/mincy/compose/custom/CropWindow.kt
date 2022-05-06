@@ -36,9 +36,6 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
         var cropRect by remember {
             mutableStateOf(Rect())
         }
-        var leftDrag by remember {
-          mutableStateOf(false)
-        }
         val cornerLineWidth = with(LocalDensity.current){
             cornerWidth.toPx()
         }
@@ -46,15 +43,7 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
         val stroke = with(LocalDensity.current){
             lineWidth.toPx()
         }
-        val canvasWidth = maxWidth-20.dp
-        val canvasHeight = maxHeight - 20.dp
-        var deltaWidth by remember {
-            mutableStateOf(0.dp)
-        }
-        var deltaHeight by remember {
-            mutableStateOf(0.dp)
-        }
-        Log.i("TAG", " canvas width: $canvasWidth + height: $canvasHeight")
+
         Surface(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
@@ -68,14 +57,15 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
             },
             color = Color.Blue
         ) {
-            var width by remember {
-                mutableStateOf(maxWidth + deltaWidth)
+            val width = LocalDensity.current.run {
+                maxWidth.toPx()
             }
-            val height = maxWidth/aspectRatio
-            Log.i(Tag.TAG, " current size width: $width + height: $height")
+            val height = LocalDensity.current.run {
+                (maxWidth/aspectRatio).toPx()
+            }
+            cropRect.set(0, 0,width.toInt(), height.toInt())
+            Log.i(Tag.TAG, " current size + height: $height")
             Canvas(modifier = Modifier
-                .width(100.dp)
-                .height(200.dp)
                 .padding(cornerWidth / 2)
             ){
 
@@ -83,37 +73,37 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
                 //vertical grid
                 drawLine(
                     color= Color.Yellow,
-                    start = Offset(cornerLineWidth/2, size.height/3f),
-                    end = Offset(size.width-cornerLineWidth/2 , size.height/3f),
+                    start = Offset(cornerLineWidth/2, cropRect.height()/3f),
+                    end = Offset(cropRect.width()-cornerLineWidth/2 , cropRect.height()/3f),
                     strokeWidth = stroke
                 )
                 drawLine(
                     color= Color.Yellow,
-                    start = Offset(cornerLineWidth/2, size.height/3f*2),
-                    end = Offset(size.width-cornerLineWidth/2, size.height/3f*2),
+                    start = Offset(cornerLineWidth/2, cropRect.height()/3f*2),
+                    end = Offset(cropRect.width()-cornerLineWidth/2, cropRect.height()/3f*2),
                     strokeWidth = stroke
                 )
                 //horizontal grid
                 drawLine(
                     color= Color.Yellow,
-                    start = Offset(size.width/3f, cornerLineWidth/2),
-                    end = Offset(size.width/3f, size.height-cornerLineWidth/2),
+                    start = Offset(cropRect.width()/3f, cornerLineWidth/2),
+                    end = Offset(cropRect.width()/3f, cropRect.height()-cornerLineWidth/2),
                     strokeWidth = stroke
                 )
                 drawLine(
                     color= Color.Yellow,
-                    start = Offset(size.width/3f*2,cornerLineWidth/2 ),
-                    end = Offset(size.width/3f*2, size.height-cornerLineWidth/2),
+                    start = Offset(cropRect.width()/3f*2,cornerLineWidth/2 ),
+                    end = Offset(cropRect.width()/3f*2, cropRect.height()-cornerLineWidth/2),
                     strokeWidth = stroke
                 )
                 val pointList = listOf(
                     Offset(cornerLineWidth/2, cornerLineWidth/2),
-                    Offset(size.width-cornerLineWidth/2, cornerLineWidth/2),
-                    Offset(size.width-cornerLineWidth/2, cornerLineWidth/2),
-                    Offset(size.width-cornerLineWidth/2, size.height-cornerLineWidth/2),
-                    Offset(size.width-cornerLineWidth/2, size.height-cornerLineWidth/2),
-                    Offset(cornerLineWidth/2, size.height-cornerLineWidth/2),
-                    Offset(cornerLineWidth/2, size.height-cornerLineWidth/2),
+                    Offset(cropRect.width()-cornerLineWidth/2, cornerLineWidth/2),
+                    Offset(cropRect.width()-cornerLineWidth/2, cornerLineWidth/2),
+                    Offset(cropRect.width()-cornerLineWidth/2, cropRect.height()-cornerLineWidth/2),
+                    Offset(cropRect.width()-cornerLineWidth/2, cropRect.height()-cornerLineWidth/2),
+                    Offset(cornerLineWidth/2, cropRect.height()-cornerLineWidth/2),
+                    Offset(cornerLineWidth/2, cropRect.height()-cornerLineWidth/2),
                     Offset(cornerLineWidth/2, cornerLineWidth/2)
                 )
                 //image crop line
@@ -127,27 +117,27 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
                 clipRect(
                     left = cornerLineWidth,
                     top = cornerLineWidth,
-                    right = size.width - cornerLineWidth,
-                    bottom = size.height - cornerLineWidth,
+                    right = cropRect.width() - cornerLineWidth,
+                    bottom = cropRect.height() - cornerLineWidth,
                     clipOp = ClipOp.Difference
                 ){
                     clipRect(
                         left = cornerLineWidth*3,
                         top = 0f,
-                        right = size.width - 3*cornerLineWidth,
-                        bottom = size.height,
+                        right = cropRect.width() - 3*cornerLineWidth,
+                        bottom = cropRect.height().toFloat(),
                         clipOp = ClipOp.Difference
                     ){
                         clipRect(
                             left = 0f,
                             top = cornerLineWidth*3f,
-                            right = size.width,
-                            bottom = size.height-3*cornerLineWidth,
+                            right = cropRect.width().toFloat(),
+                            bottom = cropRect.height()-3*cornerLineWidth,
                             clipOp = ClipOp.Difference
                         ){
                             drawRect(color = Color.Yellow,
                                 topLeft = Offset(0f, 0f),
-                                size = Size(width = size.width, height = size.height)
+                                size = Size(width = cropRect.width().toFloat(), height = cropRect.height().toFloat())
                             )
                         }
                     }
@@ -157,25 +147,26 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
     }
 }
 
-@Stable
-fun Modifier.test(){
-
-}
-
 @Preview
 @Composable
 fun PreViewD(){
     MaterialTheme {
-        Surface(Modifier.fillMaxHeight().fillMaxWidth(), color=Color.Yellow) {
-            Canvas(modifier = Modifier.width(100.dp).height(100.dp)){
-                drawLine(
-                    color= Color.Yellow,
-                    start = Offset(10f/2, size.height/3f),
-                    end = Offset(size.width-10f/2 , size.height/3f),
-                    strokeWidth = 5f
-                )
-                drawRoundRect(Color.Red, Offset(0f, 0f), Size(size.width, size.height))
-            }
-        }
+        CropWindow()
+//        Surface(
+//            Modifier
+//                .fillMaxHeight()
+//                .fillMaxWidth(), color=Color.Yellow) {
+//            Canvas(modifier = Modifier
+//                .width(100.dp)
+//                .height(100.dp)){
+//                drawLine(
+//                    color= Color.Yellow,
+//                    start = Offset(10f/2, size.height/3f),
+//                    end = Offset(size.width-10f/2 , size.height/3f),
+//                    strokeWidth = 5f
+//                )
+//                drawRoundRect(Color.Red, Offset(0f, 0f), Size(size.width, size.height))
+//            }
+//        }
     }
 }
