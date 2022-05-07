@@ -147,84 +147,90 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
             }
             cropRect.set(0f, 0f,(width-padding*2), (height-padding*2))
             Log.i(Tag.TAG, " width : $width crop rect $cropRect")
-            Canvas(modifier = Modifier){
-                if (canvasInde>0){
-                    Log.i(Tag.TAG, " canvas conmpose start")
-                }
-                if (cropRect.width()> 0){
-                    Log.i(Tag.TAG, " canvas conmpose crop rect: $cropRect")
-                }
-                //vertical grid
-                drawLine(
-                    color= Color.Yellow,
-                    start = Offset(cornerLineWidth/2 + cropRect.left, cropRect.height()/3f + cropRect.top),
-                    end = Offset(cropRect.width()-cornerLineWidth/2 + cropRect.left, cropRect.height()/3f+ cropRect.top),
-                    strokeWidth = stroke
-                )
-                drawLine(
-                    color= Color.Yellow,
-                    start = Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()/3f*2+ cropRect.top),
-                    end = Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()/3f*2+ cropRect.top),
-                    strokeWidth = stroke
-                )
-                //horizontal grid
-                drawLine(
-                    color= Color.Yellow,
-                    start = Offset(cropRect.width()/3f+ cropRect.left, cornerLineWidth/2+ cropRect.top),
-                    end = Offset(cropRect.width()/3f+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
-                    strokeWidth = stroke
-                )
-                drawLine(
-                    color= Color.Yellow,
-                    start = Offset(cropRect.width()/3f*2+ cropRect.left,cornerLineWidth/2 + cropRect.top ),
-                    end = Offset(cropRect.width()/3f*2+ cropRect.left, cropRect.height()-cornerLineWidth/2 + cropRect.top),
-                    strokeWidth = stroke
-                )
-                val pointList = listOf(
-                    Offset(cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
-                    Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
-                    Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
-                    Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
-                    Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
-                    Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
-                    Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
-                    Offset(cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top)
-                )
-                //image crop line
-                drawPoints(
-                    pointList,
-                    pointMode = PointMode.Lines,
-                    color=Color.Yellow,
-                    strokeWidth=stroke
-                )
+            CropOverGrid(canvasInde = canvasInde, cropRect = cropRect, cornerLineWidth = cornerLineWidth, stroke =stroke )
+        }
+    }
+}
 
+
+@Composable
+fun CropOverGrid(canvasInde:Int, cropRect:RectF, cornerLineWidth:Float, stroke:Float){
+    Canvas(modifier = Modifier){
+        if (canvasInde>0){
+            Log.i(Tag.TAG, " canvas conmpose start")
+        }
+        if (cropRect.width()> 0){
+            Log.i(Tag.TAG, " canvas conmpose crop rect: $cropRect")
+        }
+        //vertical grid
+        drawLine(
+            color= Color.Yellow,
+            start = Offset(cornerLineWidth/2 + cropRect.left, cropRect.height()/3f + cropRect.top),
+            end = Offset(cropRect.width()-cornerLineWidth/2 + cropRect.left, cropRect.height()/3f+ cropRect.top),
+            strokeWidth = stroke
+        )
+        drawLine(
+            color= Color.Yellow,
+            start = Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()/3f*2+ cropRect.top),
+            end = Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()/3f*2+ cropRect.top),
+            strokeWidth = stroke
+        )
+        //horizontal grid
+        drawLine(
+            color= Color.Yellow,
+            start = Offset(cropRect.width()/3f+ cropRect.left, cornerLineWidth/2+ cropRect.top),
+            end = Offset(cropRect.width()/3f+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
+            strokeWidth = stroke
+        )
+        drawLine(
+            color= Color.Yellow,
+            start = Offset(cropRect.width()/3f*2+ cropRect.left,cornerLineWidth/2 + cropRect.top ),
+            end = Offset(cropRect.width()/3f*2+ cropRect.left, cropRect.height()-cornerLineWidth/2 + cropRect.top),
+            strokeWidth = stroke
+        )
+        val pointList = listOf(
+            Offset(cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
+            Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
+            Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top),
+            Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
+            Offset(cropRect.width()-cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
+            Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
+            Offset(cornerLineWidth/2+ cropRect.left, cropRect.height()-cornerLineWidth/2+ cropRect.top),
+            Offset(cornerLineWidth/2+ cropRect.left, cornerLineWidth/2+ cropRect.top)
+        )
+        //image crop line
+        drawPoints(
+            pointList,
+            pointMode = PointMode.Lines,
+            color=Color.Yellow,
+            strokeWidth=stroke
+        )
+
+        clipRect(
+            left = cornerLineWidth+ cropRect.left,
+            top = cornerLineWidth+ cropRect.top,
+            right =  cropRect.right - cornerLineWidth,
+            bottom = cropRect.bottom - cornerLineWidth,
+            clipOp = ClipOp.Difference
+        ){
+            clipRect(
+                left = cornerLineWidth*3+ cropRect.left,
+                top =  cropRect.top,
+                right = cropRect.right - 3*cornerLineWidth,
+                bottom = cropRect.bottom,
+                clipOp = ClipOp.Difference
+            ){
                 clipRect(
-                    left = cornerLineWidth+ cropRect.left,
-                    top = cornerLineWidth+ cropRect.top,
-                    right =  cropRect.right - cornerLineWidth,
-                    bottom = cropRect.bottom - cornerLineWidth,
+                    left =  cropRect.left,
+                    top = cornerLineWidth*3f  + cropRect.top,
+                    right = cropRect.right,
+                    bottom = cropRect.top + cropRect.height()-3*cornerLineWidth,
                     clipOp = ClipOp.Difference
                 ){
-                    clipRect(
-                        left = cornerLineWidth*3+ cropRect.left,
-                        top =  cropRect.top,
-                        right = cropRect.right - 3*cornerLineWidth,
-                        bottom = cropRect.bottom,
-                        clipOp = ClipOp.Difference
-                    ){
-                        clipRect(
-                            left =  cropRect.left,
-                            top = cornerLineWidth*3f  + cropRect.top,
-                            right = cropRect.right,
-                            bottom = cropRect.top + cropRect.height()-3*cornerLineWidth,
-                            clipOp = ClipOp.Difference
-                        ){
-                            drawRect(color = Color.Yellow,
-                                topLeft = Offset(cropRect.left, cropRect.top),
-                                size = Size(width = cropRect.width(), height = cropRect.height())
-                            )
-                        }
-                    }
+                    drawRect(color = Color.Yellow,
+                        topLeft = Offset(cropRect.left, cropRect.top),
+                        size = Size(width = cropRect.width(), height = cropRect.height())
+                    )
                 }
             }
         }
@@ -232,38 +238,37 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
 }
 
 
-
 @Preview
 @Composable
 fun PreViewD(){
     MaterialTheme {
-//        CropWindow()
-        Column(modifier = Modifier.padding(16.dp)) {
-            var name by remember { mutableStateOf("") }
-            var index by remember {
-                mutableStateOf(0)
-            }
-            var rect by remember {
-                mutableStateOf(Rect())
-            }
-            if (name.isNotEmpty()) {
-                Log.i(Tag.TAG, " compose start ")
-            }
-
-            if (index > 0) {
-                Log.i(Tag.TAG, " compose start index ")
-            }
-            if (rect.width()> 0){
-                Log.i(Tag.TAG, " compose start rect $rect ")
-            }
-            OutlinedTextField(
-                value = "name",
-                onValueChange = {
-                    name = "it i    ndex++"
-                    rect.right = 1000 + rect.right
-                                },
-                label = { Text("Name") }
-            )
-        }
+        CropWindow()
+//        Column(modifier = Modifier.padding(16.dp)) {
+//            var name by remember { mutableStateOf("") }
+//            var index by remember {
+//                mutableStateOf(0)
+//            }
+//            var rect by remember {
+//                mutableStateOf(Rect())
+//            }
+//            if (name.isNotEmpty()) {
+//                Log.i(Tag.TAG, " compose start ")
+//            }
+//
+//            if (index > 0) {
+//                Log.i(Tag.TAG, " compose start index ")
+//            }
+//            if (rect.width()> 0){
+//                Log.i(Tag.TAG, " compose start rect $rect ")
+//            }
+//            OutlinedTextField(
+//                value = "name",
+//                onValueChange = {
+//                    name = "it i    ndex++"
+//                    rect.right = 1000 + rect.right
+//                                },
+//                label = { Text("Name") }
+//            )
+//        }
     }
 }
