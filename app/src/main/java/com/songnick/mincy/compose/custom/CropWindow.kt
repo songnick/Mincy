@@ -41,6 +41,11 @@ sealed class CropIndex(){
     object Invalid: CropIndex()
 }
 
+sealed class CropModel(){
+    object FreeModel:CropModel()
+    object OneToOneModel:CropModel()
+}
+
 @Composable
 fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 1.0f){
     BoxWithConstraints(contentAlignment = Alignment.BottomEnd) {
@@ -54,7 +59,7 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
         val stroke = with(LocalDensity.current){
             lineWidth.toPx()
         }
-        var cropIndex:CropIndex = CropIndex.LeftTop
+        var cropIndex:CropIndex = CropIndex.Invalid
         val surfacePadding = 20.dp
         val closePointDistance = sqrt((cornerLineWidth*3).pow(2) + (cornerLineWidth*3).pow(2))
         var canvasInde by remember {
@@ -126,40 +131,34 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
 }
 
 private fun resumeCropGrid(cropIndex: CropIndex,originRectF: RectF, cropRect: RectF, update:()->Unit){
-    val widthRatio = originRectF.width()/cropRect.width()
-    val heightRatio = originRectF.height()/cropRect.height()
-    //origin width = width*scale origin height = height*scale
-    val startRect = RectF(cropRect)
-    var scale = if (widthRatio > heightRatio){ widthRatio}else{ heightRatio }
-//    var scale = originRectF.width()*originRectF.height()/cropRect.width()*cropRect.height()
-    Log.i(Tag.TAG, " final scale size: $scale width ratio: $widthRatio height ratio:$heightRatio")
-    if (scale < 1.0f){
-        scale = 1.0f
-    }
-    val scaleHolder = PropertyValuesHolder.ofFloat("scaleX",1.0f, scale)
-    val objectAnimator = ValueAnimator.ofPropertyValuesHolder(scaleHolder)
+    val scaleX = originRectF.width()/cropRect.width()
+    val scaleY = originRectF.height()/cropRect.height()
+    val scaleXHolder = PropertyValuesHolder.ofFloat("scaleX",1.0f, scaleX)
+    val scaleYHolder = PropertyValuesHolder.ofFloat("scaleY",1.0f, scaleY)
+    val objectAnimator = ValueAnimator.ofPropertyValuesHolder(scaleXHolder,scaleYHolder)
     val oldRectF = RectF(cropRect)
     objectAnimator.duration = 200
     objectAnimator.start()
     objectAnimator.addUpdateListener {
-        val curScale = (it.getAnimatedValue("scaleX") as Float)*(startRect.width()/cropRect.width())
-        Log.i(Tag.TAG, " current animate scale: $curScale")
+        val curXScale = (it.getAnimatedValue("scaleX") as Float)
+        val curYScale = (it.getAnimatedValue("scaleY") as Float)
+        Log.i(Tag.TAG, " current animate x scale: $curXScale y scale $curYScale")
         when(cropIndex){
             CropIndex.LeftTop->{
-                cropRect.left = cropRect.right - oldRectF.width().times(curScale)
-                cropRect.top = cropRect.bottom - oldRectF.height().times(curScale)
+                cropRect.left = cropRect.right - oldRectF.width().times(curXScale)
+                cropRect.top = cropRect.bottom - oldRectF.height().times(curYScale)
             }
             CropIndex.RightTop->{
-                cropRect.right = cropRect.left + oldRectF.width().times(curScale)
-                cropRect.top = cropRect.bottom - oldRectF.height().times(curScale)
+                cropRect.right = cropRect.left + oldRectF.width().times(curXScale)
+                cropRect.top = cropRect.bottom - oldRectF.height().times(curYScale)
             }
             CropIndex.RightBottom->{
-                cropRect.right = cropRect.left + oldRectF.width().times(curScale)
-                cropRect.bottom = cropRect.top + oldRectF.height().times(curScale)
+                cropRect.right = cropRect.left + oldRectF.width().times(curXScale)
+                cropRect.bottom = cropRect.top + oldRectF.height().times(curYScale)
             }
             CropIndex.LeftBottom->{
-                cropRect.left = cropRect.right - oldRectF.width().times(curScale)
-                cropRect.bottom = cropRect.top + oldRectF.height().times(curScale)
+                cropRect.left = cropRect.right - oldRectF.width().times(curXScale)
+                cropRect.bottom = cropRect.top + oldRectF.height().times(curYScale)
             }
             CropIndex.Invalid->{
 
