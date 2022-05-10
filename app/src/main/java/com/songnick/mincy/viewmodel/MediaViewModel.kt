@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.songnick.mincy.data.MediaData
 import com.songnick.mincy.data.MediaRepository
+import com.songnick.mincy.databinding.ActivityMainBindingImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -55,6 +56,7 @@ class MediaViewModel @Inject constructor(
         class ShowData(mediaList: List<MediaData>):UIState(){
             val mediaList = mediaList
         }
+        data class JumpCrop(val mediaData: MediaData):UIState()
     }
 
     private val _uiState:MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
@@ -63,6 +65,8 @@ class MediaViewModel @Inject constructor(
 
     sealed class Action{
         object LoadData:Action()
+       data class CropImage(val mediaData: MediaData):Action()
+        data class EditImage(val editList:List<MediaData>):Action()
     }
 
     fun handleAction(action:Action){
@@ -72,6 +76,12 @@ class MediaViewModel @Inject constructor(
                 if (state is UIState.Loading){
                     loadMediaList()
                 }
+            }
+            is Action.CropImage -> {
+                action.mediaData
+            }
+            is Action.EditImage->{
+
             }
         }
     }

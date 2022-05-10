@@ -1,5 +1,7 @@
 package com.songnick.mincy.compose.ui
 
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -18,11 +20,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.HorizontalAlignmentLine
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.songnick.mincy.CropImageActivity
+import com.songnick.mincy.IntentParams
 import com.songnick.mincy.data.MediaData
+import com.songnick.mincy.model.MediaModel
+import com.songnick.mincy.viewmodel.MediaItemViewModel
+import com.songnick.mincy.viewmodel.MediaViewModel
 import java.io.File
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -67,20 +77,23 @@ fun MediaGrid(pictureList: List<MediaData>?, rowItemCount: Int) {
     }
 }
 
+
 @Composable
 fun ItemCard(data: MediaData, modifier: Modifier){
+    val viewModel:MediaViewModel = viewModel()
     Card(
         backgroundColor = Color.Red,
         modifier = modifier,
         elevation = 8.dp,
         shape = RoundedCornerShape(10.dp)
     ){
+
         var checked by remember { mutableStateOf(false) }
         val modifierL = Modifier
             .fillMaxHeight()
             .fillMaxHeight()
             .clickable {
-                checked = !checked
+                viewModel.handleAction(MediaViewModel.Action.CropImage(data))
             }
         Box(modifier = modifierL){
             Image(painter = rememberAsyncImagePainter(File(data.getImagePath())),
@@ -114,7 +127,8 @@ fun PreviewCard(){
                     data = MediaData("", "", 0, "video"),
                     Modifier
                         .weight(1.0f, false)
-                        .padding(start = 10.dp).aspectRatio(1.0f)
+                        .padding(start = 10.dp)
+                        .aspectRatio(1.0f)
                 )
             }
         }

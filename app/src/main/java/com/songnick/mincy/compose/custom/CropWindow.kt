@@ -122,7 +122,7 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
                     }
                 }
             },
-            color = Color.Blue
+            color = Color.Transparent
         ) {
             Log.i(Tag.TAG, " width : $width crop rect $cropRect")
             CropOverGrid(canvasInde = canvasInde, cropRect = cropRect, cornerLineWidth = cornerLineWidth, stroke =stroke )
