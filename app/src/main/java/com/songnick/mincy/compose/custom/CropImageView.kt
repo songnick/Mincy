@@ -48,9 +48,6 @@ fun CropImageView(path:String) {
     }
 }
 
-private fun transitionImageView(centroid:Offset, zoom:Float, rotation:Float){
-
-}
 
 @Preview
 @Composable

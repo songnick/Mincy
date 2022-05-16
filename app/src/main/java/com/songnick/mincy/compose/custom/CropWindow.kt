@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.graphics.RectF
 import android.util.Log
+import android.view.View
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.*
@@ -14,6 +15,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -21,10 +23,12 @@ import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.clipRect
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -46,9 +50,16 @@ sealed class CropModel(){
     object OneToOneModel:CropModel()
 }
 
+@ExperimentalComposeUiApi
 @Composable
 fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 1.0f){
-    BoxWithConstraints(contentAlignment = Alignment.BottomEnd) {
+    var  boxSize by remember {
+        mutableStateOf(IntSize(0, 0))
+    }
+    Box(modifier = Modifier.onSizeChanged {
+        boxSize = it
+        Log.i(Tag.TAG, " on size change: $it")
+    }) {
         var cropRect by remember {
             mutableStateOf(RectF(0f, 0f, 0f, 0f))
         }
@@ -65,64 +76,79 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
         var canvasInde by remember {
             mutableStateOf(0)
         }
-        val width = LocalDensity.current.run {
-            maxWidth.toPx()
-        }
-        val height = LocalDensity.current.run {
-            (maxWidth/aspectRatio).toPx()
-        }
+        val width = boxSize.width
+        val height = boxSize.width/aspectRatio
         val padding = LocalDensity.current.run {
             surfacePadding.toPx()
         }
-        if (cropRect.width()> 0){
-            Log.i(Tag.TAG, " >>>>> canvas conmpose crop rect: $cropRect")
-        }
-        val realHeight = LocalDensity.current.run {
-            maxHeight.toPx()
-        }
+
+        Log.i(Tag.TAG, " before  crop rect: $cropRect heith: $height")
+
+        val realHeight = boxSize.height
+
         //center for crop rect
         val left = 0f
         val top = (realHeight - height).div(2)
         val right = (width-padding*2)
         val bottom = (top + height-padding*2)
         cropRect.set(left, top, right, bottom)
+
         val originRectF by remember {
             mutableStateOf(RectF(cropRect))
         }
+        originRectF.set(cropRect)
+        Log.i(Tag.TAG, " after crop rect: $cropRect origin: $originRectF")
+
         Surface(modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
             .padding(surfacePadding)
             .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = {
-                        Log.i(Tag.TAG, " on drag start: $it")
-                        cropIndex = findDragCorner(it, cropRect, closePointDistance)
-                        canvasInde++
-                    },
-                    onDragEnd = {
-                        Log.i(Tag.TAG, " on drag end")
-                        resumeCropGrid(
-                            cropIndex,
-                            originRectF,
-                            cropRect,
-                            update={
-                            canvasInde++
+                awaitPointerEventScope {
+//                    val e = awaitPointerEvent()
+//                    drag()
+                    var offset = Offset.Zero
+                    while (true){
+                        val e = awaitPointerEvent()
+                        if (e.changes.size == 1){
+                            var pointInputChange = e.changes[0]
+                            when {
+                                pointInputChange.changedToDown() -> {
+                                    cropIndex = findDragCorner(pointInputChange.position, cropRect, closePointDistance)
+                                    canvasInde++
+                                    Log.i(Tag.TAG, " awaitPointerEventScope cropIndex: $cropIndex")
+                                }
+                                pointInputChange.changedToUp() -> {
+                                    Log.i(Tag.TAG, " on drag end")
+                                    resumeCropGrid(
+                                        cropIndex,
+                                        originRectF,
+                                        cropRect,
+                                        update = {
+                                            canvasInde++
+                                        }
+                                    )
+                                }
+                                else -> {
+                                    if (cropIndex != CropIndex.Invalid) {
+                                        dragCorner(
+                                            cropIndex = cropIndex,
+                                            cropRect = cropRect,
+                                            dragAmount = pointInputChange.positionChange()
+                                        )
+                                        canvasInde++
+                                    }
+                                }
+                            }
                         }
-                        )
+                        Log.i(Tag.TAG, " awaitPointerEventScope zoom:  " +
+                                " ${e.calculateZoom()} rotation: ${e.calculateRotation()}")
+
                     }
-                ) { _, dragAmount ->
-                    if (cropIndex != CropIndex.Invalid) {
-                        dragCorner(
-                            cropIndex = cropIndex,
-                            cropRect = cropRect,
-                            dragAmount = dragAmount
-                        )
-                        canvasInde++
-                    }
+
                 }
             },
-            color = Color.Transparent
+            color = Color.Green
         ) {
             Log.i(Tag.TAG, " width : $width crop rect $cropRect")
             CropOverGrid(canvasInde = canvasInde, cropRect = cropRect, cornerLineWidth = cornerLineWidth, stroke =stroke )
@@ -131,6 +157,7 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
 }
 
 private fun resumeCropGrid(cropIndex: CropIndex,originRectF: RectF, cropRect: RectF, update:()->Unit){
+    Log.i(Tag.TAG, " current resume crop grid origin rect: $originRectF  cropRect: $cropRect")
     val scaleX = originRectF.width()/cropRect.width()
     val scaleY = originRectF.height()/cropRect.height()
     val scaleXHolder = PropertyValuesHolder.ofFloat("scaleX",1.0f, scaleX)
@@ -319,6 +346,7 @@ fun CropOverGrid(canvasInde:Int, cropRect:RectF, cornerLineWidth:Float, stroke:F
 }
 
 
+@ExperimentalComposeUiApi
 @SuppressLint("UnrememberedAnimatable")
 @Preview
 @Composable
