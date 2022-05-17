@@ -6,8 +6,12 @@ import android.annotation.SuppressLint
 import android.graphics.RectF
 import android.util.Log
 import android.view.View
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.BottomSheetValue
@@ -23,13 +27,17 @@ import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.songnick.mincy.R
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -52,7 +60,12 @@ sealed class CropModel(){
 
 @ExperimentalComposeUiApi
 @Composable
-fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 1.0f){
+fun CropWindow(
+    cornerWidth:Dp = 15.dp,
+    lineWidth:Dp = 2.dp,
+    aspectRatio:Float = 1.0f,
+    gestureListener:(dragAmount:Offset, rotation:Float, zoom:Float)->Unit,
+    dragCancel:(cancel:Boolean)->Unit){
     var  boxSize by remember {
         mutableStateOf(IntSize(0, 0))
     }
@@ -105,29 +118,34 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
             .padding(surfacePadding)
             .pointerInput(Unit) {
                 awaitPointerEventScope {
-//                    val e = awaitPointerEvent()
-//                    drag()
-                    var offset = Offset.Zero
-                    while (true){
+                    while (true) {
                         val e = awaitPointerEvent()
-                        if (e.changes.size == 1){
+                        if (e.changes.size == 1) {
                             var pointInputChange = e.changes[0]
                             when {
                                 pointInputChange.changedToDown() -> {
-                                    cropIndex = findDragCorner(pointInputChange.position, cropRect, closePointDistance)
+                                    cropIndex = findDragCorner(
+                                        pointInputChange.position,
+                                        cropRect,
+                                        closePointDistance
+                                    )
                                     canvasInde++
                                     Log.i(Tag.TAG, " awaitPointerEventScope cropIndex: $cropIndex")
+                                    dragCancel.invoke(false)
                                 }
                                 pointInputChange.changedToUp() -> {
                                     Log.i(Tag.TAG, " on drag end")
-                                    resumeCropGrid(
-                                        cropIndex,
-                                        originRectF,
-                                        cropRect,
-                                        update = {
-                                            canvasInde++
-                                        }
-                                    )
+                                    if (cropIndex != CropIndex.Invalid) {
+                                        resumeCropGrid(cropIndex, originRectF, cropRect,
+                                            update = {
+                                                canvasInde++
+                                            }
+                                        )
+                                    } else {
+
+                                    }
+                                    cropIndex = CropIndex.Invalid
+                                    dragCancel?.invoke(true)
                                 }
                                 else -> {
                                     if (cropIndex != CropIndex.Invalid) {
@@ -137,18 +155,21 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
                                             dragAmount = pointInputChange.positionChange()
                                         )
                                         canvasInde++
+                                    } else {
+                                        gestureListener?.invoke(
+                                            pointInputChange.positionChange(),
+                                            0f,
+                                            1f
+                                        )
                                     }
                                 }
                             }
                         }
-                        Log.i(Tag.TAG, " awaitPointerEventScope zoom:  " +
-                                " ${e.calculateZoom()} rotation: ${e.calculateRotation()}")
-
                     }
 
                 }
             },
-            color = Color.Green
+            color = Color.Transparent
         ) {
             Log.i(Tag.TAG, " width : $width crop rect $cropRect")
             CropOverGrid(canvasInde = canvasInde, cropRect = cropRect, cornerLineWidth = cornerLineWidth, stroke =stroke )
@@ -158,6 +179,7 @@ fun CropWindow(cornerWidth:Dp = 15.dp, lineWidth:Dp = 2.dp, aspectRatio:Float = 
 
 private fun resumeCropGrid(cropIndex: CropIndex,originRectF: RectF, cropRect: RectF, update:()->Unit){
     Log.i(Tag.TAG, " current resume crop grid origin rect: $originRectF  cropRect: $cropRect")
+
     val scaleX = originRectF.width()/cropRect.width()
     val scaleY = originRectF.height()/cropRect.height()
     val scaleXHolder = PropertyValuesHolder.ofFloat("scaleX",1.0f, scaleX)
@@ -346,40 +368,58 @@ fun CropOverGrid(canvasInde:Int, cropRect:RectF, cornerLineWidth:Float, stroke:F
 }
 
 
+@ExperimentalAnimationApi
 @ExperimentalComposeUiApi
 @SuppressLint("UnrememberedAnimatable")
 @Preview
 @Composable
 fun PreViewD(){
     MaterialTheme {
-        CropWindow()
-
-//        Column(modifier = Modifier.padding(16.dp)) {
-//            var name by remember { mutableStateOf("") }
-//            var index by remember {
-//                mutableStateOf(0)
-//            }
-//            var rect by remember {
-//                mutableStateOf(Rect())
-//            }
-//            if (name.isNotEmpty()) {
-//                Log.i(Tag.TAG, " compose start ")
-//            }
-//
-//            if (index > 0) {
-//                Log.i(Tag.TAG, " compose start index ")
-//            }
-//            if (rect.width()> 0){
-//                Log.i(Tag.TAG, " compose start rect $rect ")
-//            }
-//            OutlinedTextField(
-//                value = "name",
-//                onValueChange = {
-//                    name = "it i    ndex++"
-//                    rect.right = 1000 + rect.right
-//                                },
-//                label = { Text("Name") }
-//            )
-//        }
+        var offset by remember {
+            mutableStateOf(Offset(0f, 0f))
+        }
+        var dragCancel by remember {
+            mutableStateOf(false)
+        }
+        val value by animateFloatAsState(
+            targetValue = 100f,
+            animationSpec = spring(
+                dampingRatio = Spring.DampingRatioHighBouncy,
+                stiffness = Spring.StiffnessMedium
+            )
+        )
+        val transition = updateTransition(targetState = offset, label = "")
+        val off by transition.animateOffset(transitionSpec = {
+            spring(Spring.DampingRatioLowBouncy, Spring.StiffnessLow)
+        },"") {
+            if (dragCancel){
+                Offset(0f, 0f)
+            }else{
+                Offset(0f, 0f)
+            }
+        }
+        val o by animateOffsetAsState(if (dragCancel)Offset(0f,0f)else offset, spring()){
+            offset = Offset(0f, 0f)
+        }
+        val image = painterResource(id = R.drawable.test)
+        Image(painter = image,"", modifier = Modifier
+            .onSizeChanged {
+                Log.i(Tag.TAG, " image bitmap's size: $it")
+            }.fillMaxWidth().fillMaxHeight()
+            .offset {
+                if (dragCancel) {
+                    IntOffset(o.x.toInt(), o.y.toInt())
+                } else {
+                    IntOffset(offset.x.toInt(), offset.y.toInt())
+                }
+            },
+        )
+        
+        CropWindow(gestureListener = {dragAmount,_,_ ->
+            offset += dragAmount
+            false
+        }, dragCancel = {
+            dragCancel = it
+        })
     }
 }
