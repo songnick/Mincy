@@ -29,7 +29,7 @@ class CropImageActivity: AppCompatActivity() {
             .fillMaxWidth()
         ){
             CropImageView(path)
-            CropWindow()
+//            CropWindow()
         }
     }
 }
