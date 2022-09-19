@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.songnick.mincy.data.MediaData
 import com.songnick.mincy.data.MediaRepository
-import com.songnick.mincy.databinding.ActivityMainBindingImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

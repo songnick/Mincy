@@ -12,9 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.navigation.findNavController
 import com.songnick.mincy.compose.ui.MincyApp
-import com.songnick.mincy.fragment.MainFragmentDirections
+import com.songnick.mincy.compose_ui.App
 import com.songnick.mincy.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -31,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requestReaderPermission()
+//        requestReaderPermission()
         setContent { App() }
 
     }
@@ -48,18 +47,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        if (!needRequest){
-
-        }
+//        val needRequest = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+//        if (!needRequest){
+//
+//        }
     }
 
-    @Composable
-    fun App(){
-        MincyApp(mediaViewModel, requestPermission = {
-            requestReaderPermission()
-        })
-    }
+//    @Composable
+//    fun App(){
+//        MincyApp(mediaViewModel, requestPermission = {
+//            requestReaderPermission()
+//        })
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

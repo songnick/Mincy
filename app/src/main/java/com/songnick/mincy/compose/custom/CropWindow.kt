@@ -10,8 +10,8 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -450,7 +450,7 @@ fun PreViewD(){
             mutableStateOf(1.0f)
         }
         val cropSize = DpSize(360.dp, 640.dp)
-        val image = painterResource(id = R.drawable.test)
+        val image = painterResource(id = 0)
         Log.i(Tag.TAG, " painter size: ${image.intrinsicSize}")
         val imageRatio = image.intrinsicSize.width/image.intrinsicSize.height
         val cropRatio = cropSize.width/cropSize.height

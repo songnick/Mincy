@@ -3,9 +3,9 @@ package com.songnick.mincy.compose.custom
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -36,7 +36,7 @@ class CropRectHandler {
             Text(
                 text = "Hello, $name",
                 modifier = Modifier.padding(bottom = 8.dp),
-                style = MaterialTheme.typography.h5
+                style = MaterialTheme.typography.bodySmall
             )
             OutlinedTextField(
                 value = name,

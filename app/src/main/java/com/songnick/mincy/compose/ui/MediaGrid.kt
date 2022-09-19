@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,40 +83,39 @@ fun MediaGrid(pictureList: List<MediaData>?, rowItemCount: Int) {
 @Composable
 fun ItemCard(data: MediaData, modifier: Modifier){
     val viewModel:MediaViewModel = viewModel()
-    Card(
-        backgroundColor = Color.Red,
-        modifier = modifier,
-        elevation = 8.dp,
-        shape = RoundedCornerShape(10.dp)
-    ){
-
-        var checked by remember { mutableStateOf(false) }
-        val modifierL = Modifier
-            .fillMaxHeight()
-            .fillMaxHeight()
-            .clickable {
-                viewModel.handleAction(MediaViewModel.Action.CropImage(data))
-            }
-        Box(modifier = modifierL){
-            Image(painter = rememberAsyncImagePainter(File(data.getImagePath())),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.aspectRatio(1.0f/1.0f))
-            Checkbox(checked = checked,
-                onCheckedChange ={checked = it },
-                modifier = Modifier.align(Alignment.TopEnd)
-            )
-            if (data.mediaType.startsWith("video")){
-                val date = Date(data.duration)
-                val format = SimpleDateFormat("mm:ss")
-                Text(text = format.format(date),
-                    Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(top = 2.dp, end = 6.dp),fontSize = 12.sp
-                )
-            }
-        }
-    }
+//    Card(
+//        modifier = modifier,
+//        elevation = Card,
+//        shape = RoundedCornerShape(10.dp)
+//    ){
+//
+//        var checked by remember { mutableStateOf(false) }
+//        val modifierL = Modifier
+//            .fillMaxHeight()
+//            .fillMaxHeight()
+//            .clickable {
+//                viewModel.handleAction(MediaViewModel.Action.CropImage(data))
+//            }
+//        Box(modifier = modifierL){
+//            Image(painter = rememberAsyncImagePainter(File(data.getImagePath())),
+//                contentDescription = null,
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier.aspectRatio(1.0f/1.0f))
+//            Checkbox(checked = checked,
+//                onCheckedChange ={checked = it },
+//                modifier = Modifier.align(Alignment.TopEnd)
+//            )
+//            if (data.mediaType.startsWith("video")){
+//                val date = Date(data.duration)
+//                val format = SimpleDateFormat("mm:ss")
+//                Text(text = format.format(date),
+//                    Modifier
+//                        .align(Alignment.BottomEnd)
+//                        .padding(top = 2.dp, end = 6.dp),fontSize = 12.sp
+//                )
+//            }
+//        }
+//    }
 }
 
 @Preview

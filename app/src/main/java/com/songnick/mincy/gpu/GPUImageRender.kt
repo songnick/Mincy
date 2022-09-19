@@ -9,16 +9,21 @@ import javax.microedition.khronos.opengles.GL10
  * @author qfsong
  * Create Time: 2022/7/3
  **/
-class GPUImageRender:GLSurfaceView.Renderer {
-    override fun onSurfaceCreated(p0: GL10?, p1: EGLConfig?) {
+class GPUImageRender: Renderer {
+    override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         TODO("Not yet implemented")
     }
 
-    override fun onSurfaceChanged(p0: GL10?, p1: Int, p2: Int) {
+    override fun onSurfaceChanged(gl: GL10?, width: Int?, height: Int?) {
         TODO("Not yet implemented")
     }
 
-    override fun onDrawFrame(p0: GL10?) {
+    override fun onSurfaceDestroyed() {
         TODO("Not yet implemented")
     }
+
+    override fun onDrawFrame(gl: GL10?): Boolean {
+        TODO("Not yet implemented")
+    }
+
 }
