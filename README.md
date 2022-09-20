@@ -1,6 +1,5 @@
-# Mincy Description
-Mincy is myself app to improve my andorid's skills. This app will be developed use kotlin and jetpack
+# Mincy
+This app is simple app, which can preview and edit media (picture and video). 
 
-# Important Skill
-1.kotlin;
-2.jectpack
+# Purpose of this Project
+This project use google's jectpack and material design as architecture. I will use newest knowlege in this project to improve my skills.
