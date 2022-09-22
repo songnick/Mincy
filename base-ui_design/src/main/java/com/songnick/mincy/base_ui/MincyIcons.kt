@@ -2,9 +2,11 @@ package com.songnick.mincy.base_ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Phone
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /*****
@@ -18,6 +20,8 @@ object MincyIcons {
     val TakePhotoBorder = R.drawable.add_a_photo_selected
     val TakeVideo = R.drawable.photo_camera
     val TakeVideoBorder = R.drawable.photo_camera_selected
+    val Search = Icons.Rounded.Search
+    val AccountCircle = Icons.Outlined.AccountCircle
 }
 
 sealed class Icon{

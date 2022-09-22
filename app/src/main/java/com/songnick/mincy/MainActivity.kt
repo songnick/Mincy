@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
@@ -12,25 +13,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
 import com.songnick.mincy.compose.ui.MincyApp
 import com.songnick.mincy.compose_ui.App
+import com.songnick.mincy.media_choose.MediaChooseVM
 import com.songnick.mincy.viewmodel.MediaViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     companion object{
         private const val  REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION = 3009
         private const val TAG = "MainActivity"
     }
 
-    private val mediaViewModel:MediaViewModel by viewModels()
+    private val mediaViewModel:MediaChooseVM by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        requestReaderPermission()
+        installSplashScreen()
+        requestReaderPermission()
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent { App() }
 
     }
@@ -40,8 +46,6 @@ class MainActivity : AppCompatActivity() {
         if (needRequest){
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION)
         }else{
-            mediaViewModel.permissionRequested = true
-            mediaViewModel.handleAction(MediaViewModel.Action.LoadData)
         }
     }
 
@@ -67,11 +71,11 @@ class MainActivity : AppCompatActivity() {
     ) {
         when (requestCode) {
             REQUEST_CODE_READ_EXTERNAL_STORAGE_PERMISSION -> {
-                mediaViewModel.permissionRequested =
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED
-                if (mediaViewModel.permissionRequested){
-                    mediaViewModel.handleAction(MediaViewModel.Action.LoadData)
-                }
+//                mediaViewModel.permissionRequested =
+//                    grantResults[0] == PackageManager.PERMISSION_GRANTED
+//                if (mediaViewModel.permissionRequested){
+//                    mediaViewModel.handleAction(MediaViewModel.Action.LoadData)
+//                }
             }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }

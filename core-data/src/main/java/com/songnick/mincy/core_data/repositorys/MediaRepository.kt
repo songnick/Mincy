@@ -1,5 +1,6 @@
 
-import com.songnick.mincy.media_choose.model.Media
+package com.songnick.mincy.core_data.repositorys
+import com.songnick.mincy.core_data.model.Media
 import kotlinx.coroutines.flow.Flow
 
 /*****
@@ -11,5 +12,5 @@ interface MediaRepository {
     /***
      * get media list
      * */
-    fun getMediaList():Flow<List<Media>>
+    suspend fun getMediaList():List<Media>
 }

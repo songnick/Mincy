@@ -1,10 +1,14 @@
 package com.songnick.mincy.base_ui
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 
 private val LightColors = lightColorScheme(
@@ -68,9 +72,32 @@ private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
 )
 
+/**
+ * Light default gradient colors
+ */
+val LightDefaultGradientColors = GradientColors(
+    primary = md_theme_light_primary,
+    secondary = md_theme_light_secondary,
+    tertiary = md_theme_light_tertiary,
+    neutral = md_theme_light_tertiary
+)
+
+/**
+ * Light Android background theme
+ */
+val LightAndroidBackgroundTheme = BackgroundTheme(color = md_theme_light_surface)
+
+/**
+ * Dark Android background theme
+ */
+val DarkAndroidBackgroundTheme = BackgroundTheme(color = Color.Black)
+
+
 @Composable
 fun MincyTheme(
   useDarkTheme: Boolean = isSystemInDarkTheme(),
+  dynamicColor:Boolean = false,
+  androidTheme:Boolean = false,
   content: @Composable() () -> Unit
 ) {
   val colors = if (!useDarkTheme) {
@@ -78,9 +105,36 @@ fun MincyTheme(
   } else {
     DarkColors
   }
-  MaterialTheme(
-    colorScheme = colors,
-    typography = AppTypography,
-    content = content
-  )
+    val defaultGradientColors = GradientColors()
+    val gradientColors = when {
+        dynamicColor -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                defaultGradientColors
+            } else {
+                if (useDarkTheme) defaultGradientColors else LightDefaultGradientColors
+            }
+        }
+        androidTheme -> defaultGradientColors
+        else -> if (useDarkTheme) defaultGradientColors else LightDefaultGradientColors
+    }
+    val defaultBackgroundTheme = BackgroundTheme(
+        color = md_theme_light_surface,
+        tonalElevation = 2.dp
+    )
+    val backgroundTheme = when {
+        dynamicColor -> defaultBackgroundTheme
+        androidTheme -> if (useDarkTheme) DarkAndroidBackgroundTheme else LightAndroidBackgroundTheme
+        else -> defaultBackgroundTheme
+    }
+    CompositionLocalProvider(
+        LocalGradientColors provides gradientColors,
+        LocalBackgroundTheme provides backgroundTheme
+    ) {
+        MaterialTheme(
+            colorScheme = colors,
+            typography = AppTypography,
+            content = content
+        )
+    }
+
 }

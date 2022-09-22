@@ -1,5 +1,4 @@
-package com.songnick.mincy.media_choose.model
-
+package com.songnick.mincy.core_data.model
 /*****
  * @author qfsong
  * Create Time: 2022/9/19

@@ -8,5 +8,7 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-
+    <style name="Theme.Mincy.Splash" parent="NightAdjusted.Theme.Splash">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_100tb</item>
+    </style>
 </resources>
