@@ -17,6 +17,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.NavHost
 import com.songnick.mincy.base_ui.Icon
 import com.songnick.mincy.base_ui.MincyTheme
+import com.songnick.mincy.base_ui.component.MincyBackground
 import com.songnick.mincy.compose_ui.nav.MincyNavHost
 import com.songnick.mincy.media_choose.MediaChooseNav
 
@@ -35,34 +36,36 @@ fun App(
     appState:MincyAppState = remeberMincyAppState()
 ) {
     MincyTheme() {
-        Scaffold(
-            modifier = Modifier.semantics { testTagsAsResourceId = true },
-            containerColor = Color.Transparent,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-            bottomBar = { MincyBottomBar(
-                destinationList = appState.destinations,
-                navigationToDestination = appState::navigate,
-                curDestination = appState.curDestination
-            )}
-        ){ padding->
-            Row(
-                Modifier
-                    .fillMaxSize()
-                    .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(
-                            WindowInsetsSides.Horizontal
+        MincyBackground {
+            Scaffold(
+                modifier = Modifier.semantics { testTagsAsResourceId = true },
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                bottomBar = { MincyBottomBar(
+                    destinationList = appState.destinations,
+                    navigationToDestination = appState::navigate,
+                    curDestination = appState.curDestination
+                )}
+            ){ padding->
+                Row(
+                    Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(
+                            WindowInsets.safeDrawing.only(
+                                WindowInsetsSides.Horizontal
+                            )
                         )
+                ) {
+                    MincyNavHost(
+                        navController = appState.navHostController,
+                        onNavigationToDestination = appState::navigate,
+                        onBackClick = { },
+                        startDestination = MediaChooseNav.route,
+                        modifier = Modifier
+                            .padding(padding)
+                            .consumedWindowInsets(padding)
                     )
-            ) {
-                MincyNavHost(
-                    navController = appState.navHostController,
-                    onNavigationToDestination = appState::navigate,
-                    onBackClick = { },
-                    startDestination = MediaChooseNav.route,
-                    modifier = Modifier
-                        .padding(padding)
-                        .consumedWindowInsets(padding)
-                )
+                }
             }
         }
     }

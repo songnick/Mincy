@@ -7,8 +7,10 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <!-- The final theme we use -->
+    <style name="Theme.Nia" parent="PlatformAdjusted.Theme.Mincy" />
     <style name="Theme.Mincy.Splash" parent="NightAdjusted.Theme.Splash">
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_100tb</item>
+        <item name="postSplashScreenTheme">@style/Theme.Nia</item>
     </style>
 </resources>

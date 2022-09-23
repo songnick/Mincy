@@ -1,5 +1,6 @@
 package com.songnick.mincy.media_choose
 
+import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
@@ -20,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,6 +32,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.songnick.mincy.R
 import com.songnick.mincy.base_ui.MincyIcons
+import com.songnick.mincy.media_choose.component.ImageCard
 import kotlinx.coroutines.launch
 import kotlin.math.round
 
@@ -38,23 +41,33 @@ import kotlin.math.round
  * Create Time: 2022/9/14
  **/
 const val TAG = "ForMediaChooseRoute"
-@OptIn(ExperimentalLifecycleComposeApi::class, ExperimentalMaterial3Api::class)
+@OptIn(
+    ExperimentalLifecycleComposeApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class
+)
 @Composable
 fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM = hiltViewModel()){
     Scaffold(
         topBar = {
-            NiaTopAppBar(
+            MincyTopAppBar(
                 titleRes = R.string.app_name,
                 navigationIcon = MincyIcons.Search,
-                navigationIconContentDescription = "",
+                navigationIconContentDescription = "点点滴滴的",
                 actionIcon = MincyIcons.AccountCircle,
-                actionIconContentDescription = "",
+                actionIconContentDescription = "点点滴滴",
                 onNavigationClick = {},
-                onActionClick = {}
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color.Transparent
+                ),
+                onActionClick = {},
+                modifier = Modifier.windowInsetsPadding(
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+                )
             )
         },
         containerColor = Color.Transparent
-    ) { _->
+    ) { padding->
         Box(
             modifier = modifier
                 .background(MaterialTheme.colorScheme.surface)
@@ -69,32 +82,30 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                 val mediaList = (uiState as MediaChooseUiState.Success).mediaList
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(4),
-                    contentPadding = PaddingValues(10.dp)
-                    ,content = {
-                        items(mediaList.size){
-                            Log.i(TAG, " current path: " + mediaList[it].path)
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(mediaList[it].path)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription ="",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .padding(4.dp)
-                                    .aspectRatio(1.0f)
-                                    .clip(RoundedCornerShape(10.dp))
-                            )
-                        }
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = modifier
+                        .padding(padding)
+                        .consumedWindowInsets(padding)
+                        .fillMaxSize()
+                        .testTag("MediaChoose")
+                    ){
+                    items(mediaList.size){
+                        Log.i(TAG, " current path: " + mediaList[it].path)
+                        ImageCard(modifier = Modifier
+                            .padding(4.dp)
+                            .aspectRatio(1.0f)
+                            .clip(RoundedCornerShape(10.dp)),
+                            path = mediaList[it].path)
+                    }
 
-                    })
+                }
             }
         }
     }
 }
 
 @Composable
-fun NiaTopAppBar(
+fun MincyTopAppBar(
     @StringRes titleRes: Int,
     navigationIcon: ImageVector,
     navigationIconContentDescription: String?,
