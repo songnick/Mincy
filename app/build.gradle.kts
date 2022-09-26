@@ -45,7 +45,7 @@ dependencies {
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.compose)
     implementation(libs.coil.kt.svg)
-    implementation(project(":base-ui_design"))
+    implementation(project(":core-designsystem"))
     implementation(project(":base-nav"))
     implementation(project(":feature-media_choose"))
     implementation(project(":feature-take_photo"))

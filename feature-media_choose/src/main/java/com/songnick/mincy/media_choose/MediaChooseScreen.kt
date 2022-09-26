@@ -1,40 +1,29 @@
 package com.songnick.mincy.media_choose
 
-import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewModelScope
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.songnick.mincy.R
 import com.songnick.mincy.base_ui.MincyIcons
 import com.songnick.mincy.media_choose.component.ImageCard
-import kotlinx.coroutines.launch
-import kotlin.math.round
+import com.songnick.mincy.media_choose.component.ImageCardState
 
 /*****
  * @author qfsong
@@ -75,13 +64,13 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ){
-            val uiState:MediaChooseUiState by chooseModel._uiState.collectAsStateWithLifecycle()
+            val uiState:MediaChooseUiState by chooseModel.uiState.collectAsStateWithLifecycle()
             if (uiState == MediaChooseUiState.Loading){
                 Text(text = "数据正在加载中")
             }else if (uiState is MediaChooseUiState.Success){
                 val mediaList = (uiState as MediaChooseUiState.Success).mediaList
                 LazyVerticalGrid(
-                    columns = GridCells.Fixed(4),
+                    columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(16.dp),
                     modifier = modifier
                         .padding(padding)
@@ -91,11 +80,31 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                     ){
                     items(mediaList.size){
                         Log.i(TAG, " current path: " + mediaList[it].path)
+                        var state by remember {
+                            mutableStateOf(ImageCardState(false, 0))
+                        }
+                        val event:Boolean by chooseModel.selectIndexEvent.collectAsStateWithLifecycle()
+                        if (event){
+                            if (state.selected){
+                                state = ImageCardState(true, state.selectedIndex-1)
+                            }
+                        }
                         ImageCard(modifier = Modifier
                             .padding(4.dp)
                             .aspectRatio(1.0f)
                             .clip(RoundedCornerShape(10.dp)),
-                            path = mediaList[it].path)
+                            path = mediaList[it].path,
+                            imageCardState = state,
+                            onClick = {
+                                state = if (state.selected){
+                                    chooseModel.selectIndexEvent.value = true
+                                    ImageCardState(false, chooseModel.curIndex)
+                                }else{
+                                    chooseModel.curIndex++
+                                    ImageCardState(true, chooseModel.curIndex)
+                                }
+                            }
+                        )
                     }
 
                 }
