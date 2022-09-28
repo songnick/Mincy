@@ -1,4 +1,4 @@
-package com.songnick.mincy.media_choose.component
+package com.songnick.mincy.feature.media_choose.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

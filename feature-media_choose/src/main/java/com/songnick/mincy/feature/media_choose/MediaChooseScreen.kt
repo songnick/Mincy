@@ -1,5 +1,6 @@
-package com.songnick.mincy.media_choose
+package com.songnick.mincy.feature.media_choose
 
+import android.content.Intent
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -22,14 +24,18 @@ import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.songnick.mincy.R
 import com.songnick.mincy.base_ui.MincyIcons
-import com.songnick.mincy.media_choose.component.ImageCard
-import com.songnick.mincy.media_choose.component.ImageCardState
+import com.songnick.mincy.core.data.model.Video
+import com.songnick.mincy.feature.media_choose.component.CardState
+import com.songnick.mincy.feature.media_choose.component.ImageCard
+import com.songnick.mincy.feature.media_choose.component.VideoCard
+
 
 /*****
  * @author qfsong
  * Create Time: 2022/9/14
  **/
 const val TAG = "ForMediaChooseRoute"
+const val MAX_SELECTED_PIC = 9
 @OptIn(
     ExperimentalLifecycleComposeApi::class,
     ExperimentalMaterial3Api::class,
@@ -69,6 +75,9 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                 Text(text = "数据正在加载中")
             }else if (uiState is MediaChooseUiState.Success){
                 val mediaList = (uiState as MediaChooseUiState.Success).mediaList
+                var removeState by remember {
+                    mutableStateOf(CardState(false, 0))
+                }
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
                     contentPadding = PaddingValues(16.dp),
@@ -78,33 +87,53 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                         .fillMaxSize()
                         .testTag("MediaChoose")
                     ){
+                    Log.i(TAG, " before update item ")
                     items(mediaList.size){
-                        Log.i(TAG, " current path: " + mediaList[it].path)
                         var state by remember {
-                            mutableStateOf(ImageCardState(false, 0))
+                            mutableStateOf(CardState(false, 0))
                         }
-                        val event:Boolean by chooseModel.selectIndexEvent.collectAsStateWithLifecycle()
-                        if (event){
-                            if (state.selected){
-                                state = ImageCardState(true, state.selectedIndex-1)
-                            }
+                        if (removeState.selectedIndex > 0 && state.selectedIndex > removeState.selectedIndex){
+                            state = CardState(true, state.selectedIndex-1)
                         }
-                        ImageCard(modifier = Modifier
-                            .padding(4.dp)
-                            .aspectRatio(1.0f)
-                            .clip(RoundedCornerShape(10.dp)),
-                            path = mediaList[it].path,
-                            imageCardState = state,
-                            onClick = {
-                                state = if (state.selected){
-                                    chooseModel.selectIndexEvent.value = true
-                                    ImageCardState(false, chooseModel.curIndex)
-                                }else{
-                                    chooseModel.curIndex++
-                                    ImageCardState(true, chooseModel.curIndex)
+                        Log.i(TAG, " state is changed")
+                        val media = mediaList[it]
+                        if (media is Video){
+                            VideoCard(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .aspectRatio(1.0f)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                video = media,
+                                onClick = {
+
                                 }
-                            }
-                        )
+                            )
+                        }else{
+                            val context = LocalContext.current
+                            ImageCard(modifier = Modifier
+                                .padding(4.dp)
+                                .aspectRatio(1.0f)
+                                .clip(RoundedCornerShape(10.dp)),
+                                path = media.path,
+                                cardState = state,
+                                onClick = {
+                                    if (chooseModel.curIndex >= MAX_SELECTED_PIC){
+                                        return@ImageCard
+                                    }
+                                    state = if (state.selected){
+                                        chooseModel.curIndex--
+                                        removeState = state
+                                        CardState(false, chooseModel.curIndex)
+                                    }else{
+                                        chooseModel.curIndex++
+                                        CardState(true, chooseModel.curIndex)
+                                    }
+                                },
+                                preViewOnClick = {
+                                    context.startActivity(Intent(context, ImagePreviewActivity::class.java))
+                                }
+                            )
+                        }
                     }
 
                 }

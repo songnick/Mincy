@@ -1,5 +1,4 @@
-package com.songnick.mincy.media_choose.component
-
+package com.songnick.mincy.feature.media_choose.component
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
 
@@ -8,4 +7,4 @@ import androidx.compose.runtime.Stable
  * Create Time: 2022/9/26
  **/
 
-data class ImageCardState(val selected:Boolean, val selectedIndex:Int)
+data class CardState(val selected:Boolean, val selectedIndex:Int)

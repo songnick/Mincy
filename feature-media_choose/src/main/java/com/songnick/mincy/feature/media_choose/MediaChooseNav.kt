@@ -1,4 +1,4 @@
-package com.songnick.mincy.media_choose
+package com.songnick.mincy.feature.media_choose
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
