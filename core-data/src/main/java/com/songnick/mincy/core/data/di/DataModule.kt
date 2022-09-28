@@ -1,6 +1,6 @@
-package com.songnick.mincy.core_data.di
-import com.songnick.mincy.core_data.repositorys.LocalMediaRepository
-import com.songnick.mincy.core_data.repositorys.MediaRepository
+package com.songnick.mincy.core.data.di
+import com.songnick.mincy.core.data.repositorys.LocalMediaRepository
+import com.songnick.mincy.core.data.repositorys.MediaRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -21,9 +21,5 @@ interface DataModule {
     fun bindsToLocalMediaRepository(
         localMediaRepository: LocalMediaRepository
     ):MediaRepository
-
-//    @Provides
-//    @Singleton
-//    fun provideMediaRepository(): MediaRepository = LocalMediaRepository()
 }
 

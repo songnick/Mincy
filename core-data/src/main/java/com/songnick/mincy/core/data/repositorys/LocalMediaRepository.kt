@@ -1,18 +1,13 @@
-package com.songnick.mincy.core_data.repositorys
+package com.songnick.mincy.core.data.repositorys
 import android.app.Application
-import android.content.Context
+import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
-import javax.inject.Singleton
-import com.songnick.mincy.core_data.model.Media
-import com.songnick.mincy.core_data.model.Picture
-import com.songnick.mincy.core_data.model.Video
-import dagger.hilt.android.HiltAndroidApp
+import com.songnick.mincy.core.data.model.Media
+import com.songnick.mincy.core.data.model.Image
+import com.songnick.mincy.core.data.model.Video
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,23 +20,40 @@ class LocalMediaRepository @Inject constructor(private val context: Application)
         const val TAG = "LocalMediaRepository"
     }
 
-    suspend fun getPictureList():List<Media> = withContext(Dispatchers.IO){
+    override suspend fun getImageList(): List<Image> = withContext(Dispatchers.IO){
         Log.i(TAG, " current thread picture: ${Thread.currentThread().name}")
         val selection = (MediaStore.MediaColumns.SIZE).plus(">0")
         val args = null
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        getMediaList(selection, args, uri)
+        val list:ArrayList<Image> = ArrayList()
+        getMediaList(selection, args, uri).onEach {
+            list.add(it as Image)
+        }
+        list
     }
 
-    private fun getMediaList(selection:String, selectionArgs:Array<String>?,contentUri: Uri):List<Media>{
+    override suspend fun getVideoList(): List<Video> = withContext(Dispatchers.IO){
+        Log.i(TAG, " current thread video: ${Thread.currentThread().name}")
+        val selection = (MediaStore.MediaColumns.SIZE).plus(">0")
+        val args = null
+        val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+        val list:ArrayList<Video> = ArrayList()
+        getMediaList(selection, args, uri).onEach {
+            list.add(it as Video)
+        }
+        list
+    }
+
+    private fun getMediaList(selection:String, selectionArgs:Array<String>?,contentUri: Uri):Array<Media>{
         val projections =
             arrayOf(MediaStore.Files.FileColumns._ID, MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.DISPLAY_NAME
                 , MediaStore.MediaColumns.DATE_MODIFIED, MediaStore.MediaColumns.MIME_TYPE, MediaStore.MediaColumns.WIDTH,
                 MediaStore.MediaColumns.HEIGHT, MediaStore.MediaColumns.SIZE, MediaStore.Video.Media.DURATION,
                 MediaStore.Video.Thumbnails.DATA)
-        val array = ArrayList<Media>()
+
         val order = MediaStore.Files.FileColumns.DATE_MODIFIED.plus(" DESC")
         val cursor = context.contentResolver.query(contentUri, projections, selection, selectionArgs, order)
+        var array = emptyArray<Media>()
         cursor?.let {
             it.moveToFirst()
             val idC = it.getColumnIndex(MediaStore.Files.FileColumns._ID)
@@ -66,12 +78,15 @@ class LocalMediaRepository @Inject constructor(private val context: Application)
                 val height = cursor.getInt(heightC)
                 val thumbnail = cursor.getString(thumbC)
                 var mediaData:Media? = null
-                if (type.startsWith("image*")){
-                    mediaData = Picture(path = path, name, size.toInt())
+
+                mediaData = if (type.startsWith("image")){
+                    val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+                    Image(path = path, name = name, uri = uri, size = size.toInt(), date=date)
                 }else{
-                    mediaData = Video( name,path = path, duration, size.toInt())
+                    val uri = ContentUris.withAppendedId(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, id)
+                    Video( name = name, uri = uri,path = path, duration = duration, size = size.toInt(), date= date)
                 }
-                array.add(mediaData!!)
+                array = array.plus(mediaData!!)
             }while (cursor.moveToNext())
             cursor.close()
         }
@@ -79,7 +94,10 @@ class LocalMediaRepository @Inject constructor(private val context: Application)
     }
 
     override suspend fun getMediaList(): List<Media> {
+        val pictureList = getImageList()
+        val videoList = getVideoList()
+        val mediaList = pictureList + videoList
 
-        return getPictureList()
+        return mediaList.toMutableList()
     }
 }

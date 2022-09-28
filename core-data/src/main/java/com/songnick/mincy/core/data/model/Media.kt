@@ -1,4 +1,6 @@
-package com.songnick.mincy.core_data.model
+package com.songnick.mincy.core.data.model
+
+import android.net.Uri
 
 /*****
  * @author qfsong
@@ -7,4 +9,6 @@ package com.songnick.mincy.core_data.model
 interface Media{
     val name:String
     val path:String
+    val uri:Uri
+    val date:Long
 }
