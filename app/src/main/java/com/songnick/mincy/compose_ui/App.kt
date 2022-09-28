@@ -19,7 +19,7 @@ import com.songnick.mincy.base_ui.Icon
 import com.songnick.mincy.base_ui.MincyTheme
 import com.songnick.mincy.base_ui.component.MincyBackground
 import com.songnick.mincy.compose_ui.nav.MincyNavHost
-import com.songnick.mincy.media_choose.MediaChooseNav
+import com.songnick.mincy.feature.media_choose.MediaChooseNav
 
 /*****
  * @author qfsong
@@ -104,6 +104,7 @@ private fun MincyBottomBar(
                                 painter = painterResource(id = icon.drawableId),
                                 contentDescription = ""
                             )
+                            else -> {}
                         }
                     },
                     label = { Text(text = stringResource(id = destination.iconTextId)) })

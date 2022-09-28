@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.songnick.mincy.base_nav.MincyNavDestination
-import com.songnick.mincy.media_choose.MediaChooseNav
-import com.songnick.mincy.media_choose.mediaChooseGraph
+import com.songnick.mincy.feature.media_choose.MediaChooseNav
+import com.songnick.mincy.feature.media_choose.mediaChooseGraph
 import com.songnick.mincy.take_picture.takePictureGraph
 
 /*****

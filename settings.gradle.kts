@@ -33,8 +33,8 @@ dependencyResolutionManagement {
 
 include (":app")
 rootProject.name="Mincy"
-include (":core-designsystem")
+include (":core-design_system")
 include (":feature-media_choose")
 include (":feature-take_photo")
 include(":core-data")
-include(":feature-picture_edit")
+include(":feature-image_edit")

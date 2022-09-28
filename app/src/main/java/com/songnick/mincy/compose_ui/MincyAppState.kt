@@ -14,7 +14,7 @@ import com.songnick.mincy.R
 import com.songnick.mincy.base_nav.MincyNavDestination
 import com.songnick.mincy.base_ui.Icon
 import com.songnick.mincy.base_ui.MincyIcons
-import com.songnick.mincy.media_choose.MediaChooseNav
+import com.songnick.mincy.feature.media_choose.MediaChooseNav
 import com.songnick.mincy.take_picture.TakePictureNav
 
 /*****
