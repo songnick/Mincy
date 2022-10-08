@@ -2,7 +2,7 @@ package com.songnick.mincy.take_picture
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.songnick.mincy.base_nav.MincyNavDestination
+import com.songnick.mincy.core.nav.MincyNavDestination
 
 /*****
  * @author qfsong

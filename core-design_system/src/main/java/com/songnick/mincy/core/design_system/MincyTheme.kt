@@ -1,4 +1,4 @@
-package com.songnick.mincy.base_ui
+package com.songnick.mincy.core.design_system
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -7,8 +7,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.songnick.mincy.core.design_system.GradientColors
+import com.songnick.mincy.core.design_system.LocalGradientColors
+import com.songnick.mincy.core.design_system.theme.*
 
 
 private val LightColors = lightColorScheme(
@@ -100,7 +105,7 @@ fun MincyTheme(
   androidTheme:Boolean = false,
   content: @Composable() () -> Unit
 ) {
-  val colors = if (!useDarkTheme) {
+  val colorScem = if (!useDarkTheme) {
     LightColors
   } else {
     DarkColors
@@ -125,6 +130,14 @@ fun MincyTheme(
         dynamicColor -> defaultBackgroundTheme
         androidTheme -> if (useDarkTheme) DarkAndroidBackgroundTheme else LightAndroidBackgroundTheme
         else -> defaultBackgroundTheme
+    }
+    val colors = if (useDarkTheme) DarkColors else LightColors
+    val systemUiController = rememberSystemUiController()
+    SideEffect {
+        systemUiController.setSystemBarsColor(
+            color = colorScem.surface.copy(alpha = 1f)
+        )
+        systemUiController.isStatusBarVisible
     }
     CompositionLocalProvider(
         LocalGradientColors provides gradientColors,

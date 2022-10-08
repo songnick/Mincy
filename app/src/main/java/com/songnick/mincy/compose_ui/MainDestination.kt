@@ -1,7 +1,7 @@
 package com.songnick.mincy.compose_ui
 
-import com.songnick.mincy.base_nav.MincyNavDestination
-import com.songnick.mincy.base_ui.Icon
+import com.songnick.mincy.core.design_system.Icon
+import com.songnick.mincy.core.nav.MincyNavDestination
 
 
 /*****

@@ -1,6 +1,7 @@
 package com.songnick.mincy.feature.media_choose
 
 import android.content.Intent
+import android.os.Parcelable
 import android.util.Log
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -23,11 +24,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.ExperimentalLifecycleComposeApi
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.songnick.mincy.R
-import com.songnick.mincy.base_ui.MincyIcons
 import com.songnick.mincy.core.data.model.Video
+import com.songnick.mincy.core.design_system.MincyIcons
 import com.songnick.mincy.feature.media_choose.component.CardState
 import com.songnick.mincy.feature.media_choose.component.ImageCard
 import com.songnick.mincy.feature.media_choose.component.VideoCard
+import java.util.ArrayList
 
 
 /*****
@@ -130,7 +132,10 @@ fun ForMediaChooseRoute(modifier: Modifier = Modifier, chooseModel:MediaChooseVM
                                     }
                                 },
                                 preViewOnClick = {
-                                    context.startActivity(Intent(context, ImagePreviewActivity::class.java))
+                                    context.startActivity(Intent(context, ImagePreviewActivity::class.java).apply {
+                                        putParcelableArrayListExtra(MediaChooseConstants.KEY_IMAGE_LIST, chooseModel.imageList as ArrayList<out Parcelable>)
+                                        putExtra(MediaChooseConstants.KEY_PREVIEW_INDEX, mediaList.indexOf(media))
+                                    })
                                 }
                             )
                         }

@@ -1,4 +1,4 @@
-package com.songnick.mincy.base_ui
+package com.songnick.mincy.core.design_system
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf

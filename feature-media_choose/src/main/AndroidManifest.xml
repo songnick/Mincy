@@ -13,8 +13,9 @@
          that other apps created. -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <application>
-        <activity android:name=".feature.media_choose.ImagePreviewActivity"
-                android:screenOrientation="portrait"
-            />
+        <activity
+            android:name=".feature.media_choose.ImagePreviewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Nia" />
     </application>
 </manifest>

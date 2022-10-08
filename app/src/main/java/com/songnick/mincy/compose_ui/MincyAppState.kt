@@ -11,9 +11,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.songnick.mincy.R
-import com.songnick.mincy.base_nav.MincyNavDestination
-import com.songnick.mincy.base_ui.Icon
-import com.songnick.mincy.base_ui.MincyIcons
+import com.songnick.mincy.core.design_system.Icon
+import com.songnick.mincy.core.design_system.MincyIcons
+import com.songnick.mincy.core.nav.MincyNavDestination
 import com.songnick.mincy.feature.media_choose.MediaChooseNav
 import com.songnick.mincy.take_picture.TakePictureNav
 
@@ -66,7 +66,7 @@ class MincyAppState(val navHostController: NavHostController){
         )
     )
 
-    fun navigate(destination:MincyNavDestination, route:String? = null){
+    fun navigate(destination: MincyNavDestination, route:String? = null){
         Log.i(TAG, "navigate route: $route")
         if (destination is MainDestination && destination.route.isNotEmpty()){
             navHostController.navigate(route?:destination.route){

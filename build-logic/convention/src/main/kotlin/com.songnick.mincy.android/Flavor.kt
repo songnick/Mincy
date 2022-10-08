@@ -1,4 +1,4 @@
-package com.google.samples.apps.nowinandroid
+package com.songnick.mincy.android
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project

@@ -11,7 +11,7 @@ android {
     }
 }
 dependencies {
-    implementation(project(":base-nav"))
+    implementation(project(":core-nav"))
     api(libs.kotlin.stdlib)
     api(libs.androidx.navigation.compose)
     api(libs.androidx.compose.ui.tooling)

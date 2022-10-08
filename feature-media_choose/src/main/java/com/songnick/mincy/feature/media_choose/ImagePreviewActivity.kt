@@ -5,9 +5,10 @@ import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.songnick.mincy.core.data.model.Image
-import com.songnick.mincy.feature.media_choose.component.ImagePreViewScreen
+import com.songnick.mincy.feature.media_choose.PreviewImage
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -18,13 +19,13 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ImagePreviewActivity: ComponentActivity() {
 
-    val chooseVM:MediaChooseVM by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        val imageList:ArrayList<Image> = intent.getParcelableArrayListExtra<Image>("picture") as ArrayList<Image>
-//        setContent {
-//            ImagePreViewScreen(pictureList = imageList)
-//        }
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        val imageList:ArrayList<Image> = intent.getParcelableArrayListExtra<Image>(MediaChooseConstants.KEY_IMAGE_LIST) as ArrayList<Image>
+        val index = intent.getIntExtra(MediaChooseConstants.KEY_PREVIEW_INDEX, 0)
+        setContent {
+            ImagePreViewScreen(pictureList = imageList, previewIndex = index)
+        }
     }
 }

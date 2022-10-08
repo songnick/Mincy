@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.songnick.mincy.base_ui">
+    package="com.songnick.mincy.core.design_system">
 
 
 </manifest>

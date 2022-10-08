@@ -41,7 +41,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
             dependencies {
                 add("implementation", project(":core-design_system"))
-                add("implementation", project(":base-nav"))
+                add("implementation", project(":core-nav"))
                 add("implementation", project(":core-data"))
 
                 add("implementation", libs.findLibrary("coil.kt").get())

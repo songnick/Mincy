@@ -38,8 +38,9 @@ class MediaChooseVM @Inject constructor(
 
     init {
         viewModelScope.launch {
-            mediaList = repository.getMediaList()
+//            mediaList = repository.getMediaList()
             imageList = repository.getImageList()
+            mediaList = imageList
             if (mediaList != null){
                 uiState.value = MediaChooseUiState.Success(mediaList!!)
             }

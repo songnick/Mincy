@@ -14,11 +14,10 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.compose.NavHost
-import com.songnick.mincy.base_ui.Icon
-import com.songnick.mincy.base_ui.MincyTheme
 import com.songnick.mincy.base_ui.component.MincyBackground
 import com.songnick.mincy.compose_ui.nav.MincyNavHost
+import com.songnick.mincy.core.design_system.Icon
+import com.songnick.mincy.core.design_system.MincyTheme
 import com.songnick.mincy.feature.media_choose.MediaChooseNav
 
 /*****
@@ -26,6 +25,7 @@ import com.songnick.mincy.feature.media_choose.MediaChooseNav
  * Create Time: 2022/9/7
  **/
 const val TAG = "App"
+
 @OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalLayoutApi::class,
@@ -33,7 +33,7 @@ const val TAG = "App"
 )
 @Composable
 fun App(
-    appState:MincyAppState = remeberMincyAppState()
+    appState: MincyAppState = remeberMincyAppState()
 ) {
     MincyTheme() {
         MincyBackground {
@@ -41,12 +41,14 @@ fun App(
                 modifier = Modifier.semantics { testTagsAsResourceId = true },
                 containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onBackground,
-                bottomBar = { MincyBottomBar(
-                    destinationList = appState.destinations,
-                    navigationToDestination = appState::navigate,
-                    curDestination = appState.curDestination
-                )}
-            ){ padding->
+                bottomBar = {
+                    MincyBottomBar(
+                        destinationList = appState.destinations,
+                        navigationToDestination = appState::navigate,
+                        curDestination = appState.curDestination
+                    )
+                }
+            ) { padding ->
                 Row(
                     Modifier
                         .fillMaxSize()
@@ -73,10 +75,10 @@ fun App(
 
 @Composable
 private fun MincyBottomBar(
-    destinationList:List<MainDestination>,
-    navigationToDestination: (MainDestination)->Unit,
-    curDestination:NavDestination?
-){
+    destinationList: List<MainDestination>,
+    navigationToDestination: (MainDestination) -> Unit,
+    curDestination: NavDestination?
+) {
     Surface(color = MaterialTheme.colorScheme.surface) {
         MincyNavigationBar(
             modifier = Modifier
@@ -86,16 +88,18 @@ private fun MincyBottomBar(
                     )
                 )
         ) {
-            destinationList.forEach { destination->
-                val selected = curDestination?.hierarchy?.any { it.route == destination.route } == true
+            destinationList.forEach { destination ->
+                val selected =
+                    curDestination?.hierarchy?.any { it.route == destination.route } == true
                 MincyNavigationItem(
                     selected = selected,
                     onClick = {
                         Log.i(TAG, " on  clicked ")
                         navigationToDestination(destination)
-                              },
+                    },
                     icon = {
-                        when(val icon = if (selected) destination.selectedIcon else destination.unSelectedIcon){
+                        when (val icon =
+                            if (selected) destination.selectedIcon else destination.unSelectedIcon) {
                             is Icon.ImageVectorIcon -> Icon(
                                 imageVector = icon.imageVector,
                                 contentDescription = ""
@@ -116,28 +120,28 @@ private fun MincyBottomBar(
 @Composable
 fun MincyNavigationBar(
     modifier: Modifier = Modifier,
-    content:@Composable() RowScope.()->Unit
-){
+    content: @Composable() RowScope.() -> Unit
+) {
     NavigationBar(
         modifier = modifier,
         containerColor = MincyNavigationDefaults.NavigationContainerColor,
         contentColor = MincyNavigationDefaults.navigationContentColor(),
-        tonalElevation=0.dp,
+        tonalElevation = 0.dp,
         content = content
     )
 }
 
 @Composable
 fun RowScope.MincyNavigationItem(
-    selected:Boolean,
-    onClick:()->Unit,
-    icon:@Composable ()-> Unit,
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    selectedIcon:@Composable ()->Unit = icon,
-    enable:Boolean = true,
-    label:@Composable (()-> Unit)? = null,
-    alwaysShowLabel:Boolean = true
-){
+    selectedIcon: @Composable () -> Unit = icon,
+    enable: Boolean = true,
+    label: @Composable (() -> Unit)? = null,
+    alwaysShowLabel: Boolean = true
+) {
     NavigationBarItem(
         selected = selected,
         onClick = onClick,
@@ -147,10 +151,10 @@ fun RowScope.MincyNavigationItem(
         label = label,
         alwaysShowLabel = alwaysShowLabel,
         colors = NavigationBarItemDefaults.colors(
-           selectedIconColor =MincyNavigationDefaults.navigationSelectedItemColor(),
+            selectedIconColor = MincyNavigationDefaults.navigationSelectedItemColor(),
             unselectedIconColor = MincyNavigationDefaults.navigationContentColor(),
-            selectedTextColor = MincyNavigationDefaults.navigationIndicatorColor(),
-            unselectedTextColor = MincyNavigationDefaults.navigationSelectedItemColor(),
+            selectedTextColor = MincyNavigationDefaults.navigationSelectedItemColor(),
+            unselectedTextColor = MincyNavigationDefaults.navigationContentColor(),
             indicatorColor = MincyNavigationDefaults.navigationIndicatorColor()
         )
     )
@@ -161,10 +165,13 @@ fun RowScope.MincyNavigationItem(
  */
 object MincyNavigationDefaults {
     val NavigationContainerColor = Color.Transparent
+
     @Composable
     fun navigationContentColor() = MaterialTheme.colorScheme.onSurfaceVariant
+
     @Composable
     fun navigationSelectedItemColor() = MaterialTheme.colorScheme.onPrimaryContainer
+
     @Composable
     fun navigationIndicatorColor() = MaterialTheme.colorScheme.primaryContainer
 }

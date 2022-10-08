@@ -1,4 +1,4 @@
-include(":base-nav")
+include(":core-nav")
 
 pluginManagement {
     includeBuild("build-logic")

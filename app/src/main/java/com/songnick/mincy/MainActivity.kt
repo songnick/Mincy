@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import com.songnick.mincy.compose_ui.App
+import com.songnick.mincy.compose_ui.TestApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

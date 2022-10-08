@@ -27,7 +27,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.fragment)
-
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.coil.kt)
     implementation(libs.coil.kt.svg)
 

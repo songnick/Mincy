@@ -1,13 +1,10 @@
-package com.songnick.mincy.base_ui
-
+package com.songnick.mincy.core.design_system
 import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.rounded.Call
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.ui.graphics.vector.ImageVector
+
 
 /*****
  * @author qfsong

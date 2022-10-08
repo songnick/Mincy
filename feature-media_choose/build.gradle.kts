@@ -3,7 +3,6 @@ plugins {
     id("mincy.android.library.compose")
     id("dagger.hilt.android.plugin")
     id("mincy.android.feature")
-    id("kotlin-parcelize")
 }
 android {
     defaultConfig {
@@ -33,6 +32,7 @@ dependencies {
     implementation(libs.coil.kt.video)
     implementation(libs.coil.kt.gif)
     implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.systemuicontroller)
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")

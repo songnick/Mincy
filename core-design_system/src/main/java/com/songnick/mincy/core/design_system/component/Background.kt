@@ -19,9 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.songnick.mincy.base_ui.LocalBackgroundTheme
-import com.songnick.mincy.base_ui.LocalGradientColors
-import com.songnick.mincy.base_ui.MincyTheme
+import com.songnick.mincy.core.design_system.theme.LocalBackgroundTheme
+import com.songnick.mincy.core.design_system.LocalGradientColors
+import com.songnick.mincy.core.design_system.MincyTheme
 import kotlin.math.tan
 
 /*****

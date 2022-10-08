@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.*
@@ -95,9 +96,10 @@ fun ImageCard(
             }
             Box(
                 modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 10.dp, end = 10.dp)
-                 .clip(RoundedCornerShape(2.dp)).combinedClickable(onClick = preViewOnClick)
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = 10.dp, end = 10.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .combinedClickable(onClick = preViewOnClick)
             ){
                 Image(
                     painter = painterResource(id = R.drawable.fullscreen),

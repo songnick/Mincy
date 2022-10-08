@@ -9,7 +9,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.songnick.mincy.core_data.model.Picture
+import com.songnick.mincy.core.data.model.Image
 
 /*****
  * @author qfsong
@@ -18,7 +18,7 @@ import com.songnick.mincy.core_data.model.Picture
 @Composable
 fun ImageEditPage(
     modifier: Modifier = Modifier,
-    picture: Picture
+    picture: Image
 ) {
     Box(modifier = modifier){
         AsyncImage(
