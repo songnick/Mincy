@@ -1,4 +1,4 @@
-package com.songnick.mincy.base_ui.component
+package com.songnick.mincy.core.design_system.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box

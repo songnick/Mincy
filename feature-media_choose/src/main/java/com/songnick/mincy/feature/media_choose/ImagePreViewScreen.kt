@@ -20,9 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTagsAsResourceId
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,23 +38,24 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.songnick.mincy.R
-import com.songnick.mincy.base_ui.component.MincyBackground
 import com.songnick.mincy.core.data.model.Image
 import com.songnick.mincy.core.data.model.Media
 import com.songnick.mincy.core.design_system.MincyTheme
+import com.songnick.mincy.core.design_system.component.MincyBackground
+import com.songnick.mincy.core.design_system.component.MincySimpleTopAppBar
 import com.songnick.mincy.core.design_system.theme.colorWithAlpha
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 /*****
  * @author qfsong
  * Create Time: 2022/9/28
  **/
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class,
+@OptIn(
+    ExperimentalPagerApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalComposeUiApi::class
 )
 @Composable
@@ -79,29 +82,26 @@ fun ImagePreViewScreen(
                 containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.onBackground,
                 topBar = {
-                    PreviewTopAppBar(
-                        title = index.toString().plus("/").plus(pictureList.size.toString()),
-                        modifier = Modifier.windowInsetsPadding(
-                            WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
-                        ),
-                        navigationIcon = Icons.Rounded.ArrowBack,
-                        actionIcon = ImageVector.vectorResource(id = R.drawable.info),
-                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        navigationOnClick = {
-                            activity.finish()
-                        },
-                        actionOnClick = {
-                            showInfo.value = !showInfo.value
-                        }
-                    )
+                    if (statusBarVisible.value){
+                        MincySimpleTopAppBar(
+                            title = index.toString().plus("/").plus(pictureList.size.toString()),
+                            modifier = Modifier.windowInsetsPadding(
+                                WindowInsets.safeDrawing.only(WindowInsetsSides.Top)
+                            ),
+                            navigationIcon = Icons.Rounded.ArrowBack,
+                            actionIcon = ImageVector.vectorResource(id = R.drawable.info),
+                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                containerColor = MaterialTheme.colorScheme.surface
+                            ),
+                            navigationOnClick = {
+                                activity.finish()
+                            },
+                            actionOnClick = {
+                                showInfo.value = !showInfo.value
+                            }
+                        )
+                    }
                 },
-                floatingActionButton = {
-                    Text(text = "helloWorld!")
-
-                },
-                floatingActionButtonPosition = FabPosition.Center
             ) { paddingValues ->
                 val pagerState = rememberPagerState()
                 val top = paddingValues.calculateTopPadding()
@@ -116,7 +116,7 @@ fun ImagePreViewScreen(
                     state = pagerState
                 ) {
                     PreviewImage(data = pictureList[it], onClick = {
-//                        statusBarVisible.value = !statusBarVisible.value
+                        statusBarVisible.value = !statusBarVisible.value
                     })
                 }
                 LaunchedEffect(pagerState){
@@ -137,8 +137,49 @@ fun ImagePreViewScreen(
                 if (showInfo.value){
                     PreviewImageInfo(media = currentMedia.value)
                 }
+                PreviewImageFloatingAction(modifier = Modifier)
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PreviewImageFloatingAction(modifier: Modifier){
+    Box(modifier = modifier
+        .fillMaxSize()
+    ){
+        Card(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Row(modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+            ) {
+                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.share,"分享")
+                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.heart_plus,"收藏")
+                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.edit_square,"编辑")
+                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.delete,"删除")
+            }
+        }
+
+    }
+}
+
+@Composable
+fun FloatActionTab(modifier: Modifier,tabIcon:Int, tabName:String){
+    Column(modifier = modifier
+        .padding(top = 16.dp, bottom = 16.dp)
+    ) {
+        val childModifier = Modifier.align(Alignment.CenterHorizontally)
+        Icon(
+            painter = painterResource(id = tabIcon),
+            contentDescription = tabName,
+            modifier = childModifier)
+        Spacer(modifier = childModifier.height(2.dp))
+        Text(text = tabName, fontSize = 12.sp, fontWeight = FontWeight.Bold , color = Color.Black, modifier = childModifier)
     }
 }
 
@@ -157,12 +198,7 @@ fun PreviewImageInfo(media:Media){
                 .aspectRatio(1.333f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(
-                    Color(
-                        red = Color.Black.red,
-                        green = Color.Black.green,
-                        blue = Color.Black.blue,
-                        alpha = 0.3f
-                    )
+                    colorWithAlpha(Color.Black,0.3f)
                 )
         ) {
             Column(modifier = Modifier
@@ -239,31 +275,6 @@ fun PreviewImage(data: Image, onClick:()->Unit){
     )
 }
 
-
-@Composable
-fun PreviewTopAppBar(
-    title:String,
-    modifier: Modifier,
-    navigationIcon:ImageVector,
-    actionIcon:ImageVector,
-    colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
-    navigationOnClick:() -> Unit = {},
-    actionOnClick:() -> Unit = {}
-    ){
-    CenterAlignedTopAppBar(
-        title = { Text(text = title)},
-        navigationIcon = { IconButton(onClick = navigationOnClick) {
-            Icon(imageVector = navigationIcon, contentDescription ="" )
-        }},
-        actions = {
-            IconButton(onClick = actionOnClick) {
-                Icon(imageVector = actionIcon, contentDescription = "")
-            }
-        },
-        colors = colors,
-        modifier = modifier
-    )
-}
 
 @Preview
 @Composable

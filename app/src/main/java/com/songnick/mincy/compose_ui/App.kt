@@ -14,10 +14,10 @@ import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.songnick.mincy.base_ui.component.MincyBackground
 import com.songnick.mincy.compose_ui.nav.MincyNavHost
 import com.songnick.mincy.core.design_system.Icon
 import com.songnick.mincy.core.design_system.MincyTheme
+import com.songnick.mincy.core.design_system.component.MincyBackground
 import com.songnick.mincy.feature.media_choose.MediaChooseNav
 
 /*****
