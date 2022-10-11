@@ -26,7 +26,9 @@ fun ImageEditTab(
         Column() {
             val childModifier = Modifier.align(Alignment.CenterHorizontally)
             Icon(painter = painterResource(id = tabIcon), contentDescription = "", modifier = childModifier)
-            Spacer(modifier = Modifier.height(4.dp).fillMaxWidth())
+            Spacer(modifier = Modifier
+                .height(4.dp)
+                .fillMaxWidth())
             Text(text = tabText,modifier = childModifier)
         }
     }

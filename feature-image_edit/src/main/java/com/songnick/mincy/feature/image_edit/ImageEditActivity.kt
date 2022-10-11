@@ -14,7 +14,7 @@ import com.songnick.mincy.core.data.model.Image
 class ImageEditActivity:ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val image = intent.getParcelableExtra<Image>("")
+        val image = intent.getParcelableExtra<Image>("edit_image")
         if (image != null){
             setContent { ImageEditPage(picture = image) }
         }else{

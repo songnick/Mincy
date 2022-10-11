@@ -17,3 +17,8 @@ data class Image(
     override val date: Long,
     val size:Int
 ): Media
+
+fun createEmptyImage():Image{
+
+    return Image("", "", Uri.EMPTY, 0L, 0)
+}

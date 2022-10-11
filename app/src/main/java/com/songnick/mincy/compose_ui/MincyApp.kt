@@ -24,7 +24,7 @@ import com.songnick.mincy.feature.media_choose.MediaChooseNav
  * @author qfsong
  * Create Time: 2022/9/7
  **/
-const val TAG = "App"
+const val TAG = "MincyApp"
 
 @OptIn(
     ExperimentalMaterial3Api::class,
@@ -32,7 +32,7 @@ const val TAG = "App"
     ExperimentalComposeUiApi::class
 )
 @Composable
-fun App(
+fun MincyApp(
     appState: MincyAppState = remeberMincyAppState()
 ) {
     MincyTheme() {

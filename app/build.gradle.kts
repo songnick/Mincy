@@ -50,6 +50,7 @@ dependencies {
     implementation(project(":core-nav"))
     implementation(project(":feature-media_choose"))
     implementation(project(":feature-take_photo"))
+    implementation(project(":feature-image_edit"))
     //    kapt ("com.google.dagger:hilt-android-compiler:2.38.1")
 //    implementation("com.google.dagger:hilt-android:2.38.1")
 

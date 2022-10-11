@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.songnick.mincy.picture_edit">
-
+    package="com.songnick.mincy.feature.image_edit">
+    <application>
+        <activity android:name=".ImageEditActivity"
+            android:theme="@style/Theme.Nia"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.songnick.mincy.feature.image_edit.Image"/>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
 </manifest>

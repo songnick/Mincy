@@ -2,21 +2,14 @@ package com.songnick.mincy
 
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.songnick.mincy.compose_ui.App
-import com.songnick.mincy.compose_ui.TestApp
+import com.songnick.mincy.compose_ui.MincyApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +26,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         requestReaderPermission()
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent { App() }
+        setContent { MincyApp() }
 
     }
 

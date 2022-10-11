@@ -7,7 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /*****
- * @author qfsong
+ * @author songnick
+ * @mail qfsong108@gmail.com
  * Create Time: 2022/10/9
  **/
 @Composable

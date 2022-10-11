@@ -1,10 +1,12 @@
 package com.songnick.mincy.feature.media_choose
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,10 +42,12 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.songnick.mincy.R
 import com.songnick.mincy.core.data.model.Image
 import com.songnick.mincy.core.data.model.Media
+import com.songnick.mincy.core.data.model.createEmptyImage
 import com.songnick.mincy.core.design_system.MincyTheme
 import com.songnick.mincy.core.design_system.component.MincyBackground
 import com.songnick.mincy.core.design_system.component.MincySimpleTopAppBar
 import com.songnick.mincy.core.design_system.theme.colorWithAlpha
+import com.songnick.mincy.core.nav.MincyNavRoute
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -126,6 +130,10 @@ fun ImagePreViewScreen(
                         Log.i("ImagePreViewScreen", " current index: $it")
                         index = it+1
                         currentMedia.value = pictureList[index]
+                        CompositionLocalProvider(currentCompositionLocalContext) {
+
+
+                        }
                     }
 
                 }
@@ -143,10 +151,13 @@ fun ImagePreViewScreen(
     }
 }
 
+private val LocalCurrentImage = staticCompositionLocalOf { createEmptyImage() }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreviewImageFloatingAction(modifier: Modifier){
+    val context = LocalContext.current
+    val curImage = LocalCurrentImage.current
     Box(modifier = modifier
         .fillMaxSize()
     ){
@@ -158,10 +169,22 @@ fun PreviewImageFloatingAction(modifier: Modifier){
         ) {
             Row(modifier = Modifier.background(MaterialTheme.colorScheme.surface)
             ) {
-                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.share,"分享")
-                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.heart_plus,"收藏")
-                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.edit_square,"编辑")
-                FloatActionTab(modifier = Modifier.weight(1.0f),R.drawable.delete,"删除")
+                val modifier = Modifier.weight(1.0f)
+                FloatActionTab(modifier = modifier,R.drawable.share,"分享")
+                FloatActionTab(modifier = modifier,R.drawable.heart_plus,"收藏")
+                FloatActionTab(
+                    modifier = modifier,
+                    R.drawable.edit_square,"编辑",
+                    onClick = {
+                        if (context is Activity){
+                            context.startActivity(Intent().apply {
+                                action = MincyNavRoute.IMAGE_EDIT_ROUTE
+                                putExtra("edit_image", curImage)
+                            })
+                        }
+                    }
+                )
+                FloatActionTab(modifier = modifier,R.drawable.delete,"删除")
             }
         }
 
@@ -169,9 +192,17 @@ fun PreviewImageFloatingAction(modifier: Modifier){
 }
 
 @Composable
-fun FloatActionTab(modifier: Modifier,tabIcon:Int, tabName:String){
+fun FloatActionTab(
+    modifier: Modifier,
+    tabIcon:Int,
+    tabName:String,
+    onClick: () -> Unit = {}
+){
     Column(modifier = modifier
         .padding(top = 16.dp, bottom = 16.dp)
+        .clickable {
+            onClick.invoke()
+        }
     ) {
         val childModifier = Modifier.align(Alignment.CenterHorizontally)
         Icon(
@@ -198,7 +229,7 @@ fun PreviewImageInfo(media:Media){
                 .aspectRatio(1.333f)
                 .clip(RoundedCornerShape(12.dp))
                 .background(
-                    colorWithAlpha(Color.Black,0.3f)
+                    colorWithAlpha(Color.Black, 0.3f)
                 )
         ) {
             Column(modifier = Modifier
